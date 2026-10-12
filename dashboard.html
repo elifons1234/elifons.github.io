@@ -1,36 +1,35 @@
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Elifons Gold</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Elifons Gold</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff;padding-bottom:60px}
-.top{position:sticky;top:0;z-index:10;background:#111;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:2px solid #d4af37}
-.top b{color:#d4af37;font-size:22px}
-.fb-nav{position:sticky;top:52px;z-index:9;background:#111;display:flex;justify-content:space-around;padding:8px 0;border-bottom:1px solid #222}
-.fb-nav span{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px}
-.fb-nav span.active,.bottom-nav span.active{background:#d4af37;color:#000;font-weight:bold}
-.page{display:none;min-height:60vh}.page.active{display:block}
-.story-bar{display:flex;gap:10px;overflow-x:auto;padding:10px;background:#111;border-bottom:1px solid #222}
-.story{flex:0 0 60px;text-align:center;cursor:pointer}
-.story img{width:56px;height:56px;border-radius:50%;border:3px solid #d4af37;object-fit:cover}
-.feed-post{background:#111;margin:8px auto;max-width:600px;border-radius:10px;overflow:hidden;border:1px solid #222}
+body{background:#000;color:#fff;padding-bottom:70px}
+.top{position:sticky;top:0;z-index:10;background:#111;display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:2px solid #d4af37}
+.top b{color:#d4af37}
+.fb-nav{position:sticky;top:50px;z-index:9;background:#111;display:flex;justify-content:space-around;padding:8px 0;border-bottom:1px solid #222}
+.fb-nav span{padding:7px 10px;border-radius:20px;cursor:pointer;font-size:12px}
+.fb-nav span.active{background:#d4af37;color:#000;font-weight:bold}
+.page{display:none}.page.active{display:block}
+.feed-post{background:#111;margin:8px auto;max-width:600px;border-radius:12px;border:1px solid #222;overflow:hidden}
 .post-head{padding:10px;display:flex;gap:10px;align-items:center}
 .post-head img{width:36px;height:36px;border-radius:50%}
-.post-caption{padding:10px}
-.post-media{width:100%;max-height:500px;object-fit:cover;background:#000}
+.post-caption{padding:10px;font-size:14px}
+.post-media{width:100%;max-height:450px;object-fit:cover}
 .actions{display:flex;justify-content:space-around;padding:8px;border-top:1px solid #222}
-.actions span{cursor:pointer;font-size:13px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #d4af37;display:flex;justify-content:space-around;padding:8px 0;z-index:20}
-.bottom-nav span{padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px}
 .chat-window{position:fixed;inset:0;background:#000;z-index:50;display:none;flex-direction:column}
-.messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
-.msg{max-width:75%;padding:8px 12px;border-radius:15px;font-size:14px;word-break:break-word}
+.messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:78%;padding:10px 12px;border-radius:18px;font-size:14px;word-break:break-word}
 .msg.me{align-self:flex-end;background:#d4af37;color:#000;border-bottom-right-radius:4px}
 .msg.them{align-self:flex-start;background:#222;border-bottom-left-radius:4px}
-.input-bar{display:flex;gap:6px;padding:8px;background:#111;border-top:1px solid #222;align-items:center}
-.input-bar input{flex:1;padding:10px;border-radius:20px;border:none;background:#222;color:#fff}
-.group-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.msg.ai{align-self:flex-start;background:#1a2a3a;border:1px solid #d4af37}
+.msg.system{align-self:center;background:#333;color:#d4af37;font-size:11px;padding:5px 10px;border-radius:10px}
+.input-bar{display:flex;gap:6px;padding:10px;background:#111;border-top:1px solid #222;align-items:center}
+.input-bar input{flex:1;padding:12px;border-radius:25px;border:none;background:#222;color:#fff}
+.online-dot{width:10px;height:10px;background:#00ff00;border-radius:50%;border:2px solid #111;position:absolute;bottom:0;right:0}
+.pic-wrap{position:relative;display:inline-block}
+.typing{font-size:12px;color:#00ff00;font-style:italic}
+.lastseen{font-size:11px;color:#25D366}
+.group-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .group-box{background:#111;border:2px solid #d4af37;border-radius:15px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
 .group-box input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff}
 .member{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222}
@@ -40,151 +39,206 @@ const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqZQw",authDoma
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
 const db=firebase.database();
 let user=JSON.parse(localStorage.getItem('elifons_user')||'null');
-if(!user){location.href='index.html';}
-let myPic=localStorage.getItem('myPic')||'https://i.pravatar.cc/100?u='+user.name;
-window.currentChat=null;
-window.currentGroup=null;
-
-// SAVE USER TO FIREBASE - so admin sees
-db.ref('users/'+user.phone).set({name:user.name, phone:user.phone, pic:myPic, time:Date.now(), online:true});
-db.ref('users/'+user.phone).onDisconnect().update({online:false});
-
-// Check if banned
-db.ref('banned/'+user.name.replace(/[^a-zA-Z0-9]/g,'_')).once('value').then(s=>{if(s.val()){alert('You are BANNED 🚫'); localStorage.clear(); location.href='index.html';}});
-
+if(!user) location.href='index.html';
+let myPic=localStorage.getItem('myPic')||'https://i.pravatar.cc/100?u='+user.phone;
+window.currentChat=null; window.isGroupChat=false; window.isAIChat=false;
+function getChatId(other){let p=[user.phone, other].sort(); return 'CHAT_'+p[0]+'_'+p[1];}
+function goOnline(){
+ db.ref('users/'+user.phone).update({online:true,lastSeen:Date.now()});
+ db.ref('users/'+user.phone+'/presence').set(true);
+ db.ref('users/'+user.phone+'/presence').onDisconnect().remove();
+ db.ref('users/'+user.phone).onDisconnect().update({online:false,lastSeen:Date.now()});
+}
+goOnline(); setInterval(goOnline,25000);
+window.addEventListener('beforeunload',()=>{db.ref('users/'+user.phone).update({online:false,lastSeen:Date.now()});});
+db.ref('banned/'+user.phone).once('value').then(s=>{if(s.val()){alert('BANNED 🚫'); localStorage.clear(); location.href='index.html';}});
 const ref=(d,p)=>firebase.database().ref(p);
 const push=(r,d)=>r.push(d);
 const get=(r)=>r.once('value');
 const update=(r,d)=>r.update(d);
-const remove=(r)=>r.remove();
+function formatLastSeen(ts){
+ if(!ts) return 'Offline';
+ let diff=Date.now()-ts;
+ if(diff<60000) return 'online';
+ if(diff<3600000) return 'last seen '+Math.floor(diff/60000)+'m ago';
+ if(diff<86400000) return 'last seen '+Math.floor(diff/3600000)+'h ago';
+ return 'last seen '+new Date(ts).toLocaleDateString();
+}
 </script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Elifons Gold</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;padding-bottom:70px}
+.top{position:sticky;top:0;z-index:10;background:#111;display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:2px solid #d4af37}
+.top b{color:#d4af37}
+.fb-nav{position:sticky;top:50px;z-index:9;background:#111;display:flex;justify-content:space-around;padding:8px 0;border-bottom:1px solid #222}
+.fb-nav span{padding:7px 10px;border-radius:20px;cursor:pointer;font-size:12px}
+.fb-nav span.active{background:#d4af37;color:#000;font-weight:bold}
+.page{display:none}.page.active{display:block}
+.feed-post{background:#111;margin:8px auto;max-width:600px;border-radius:12px;border:1px solid #222;overflow:hidden}
+.post-head{padding:10px;display:flex;gap:10px;align-items:center}
+.post-head img{width:36px;height:36px;border-radius:50%}
+.post-caption{padding:10px;font-size:14px}
+.post-media{width:100%;max-height:450px;object-fit:cover}
+.actions{display:flex;justify-content:space-around;padding:8px;border-top:1px solid #222}
+.chat-window{position:fixed;inset:0;background:#000;z-index:50;display:none;flex-direction:column}
+.messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:78%;padding:10px 12px;border-radius:18px;font-size:14px;word-break:break-word}
+.msg.me{align-self:flex-end;background:#d4af37;color:#000;border-bottom-right-radius:4px}
+.msg.them{align-self:flex-start;background:#222;border-bottom-left-radius:4px}
+.msg.ai{align-self:flex-start;background:#1a2a3a;border:1px solid #d4af37}
+.msg.system{align-self:center;background:#333;color:#d4af37;font-size:11px;padding:5px 10px;border-radius:10px}
+.input-bar{display:flex;gap:6px;padding:10px;background:#111;border-top:1px solid #222;align-items:center}
+.input-bar input{flex:1;padding:12px;border-radius:25px;border:none;background:#222;color:#fff}
+.online-dot{width:10px;height:10px;background:#00ff00;border-radius:50%;border:2px solid #111;position:absolute;bottom:0;right:0}
+.pic-wrap{position:relative;display:inline-block}
+.typing{font-size:12px;color:#00ff00;font-style:italic}
+.lastseen{font-size:11px;color:#25D366}
+.group-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.group-box{background:#111;border:2px solid #d4af37;border-radius:15px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.group-box input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff}
+.member{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222}
+</style></head><body>
+<script>
+const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();
+let user=JSON.parse(localStorage.getItem('elifons_user')||'null');
+if(!user) location.href='index.html';
+let myPic=localStorage.getItem('myPic')||'https://i.pravatar.cc/100?u='+user.phone;
+window.currentChat=null; window.isGroupChat=false; window.isAIChat=false;
+function getChatId(other){let p=[user.phone, other].sort(); return 'CHAT_'+p[0]+'_'+p[1];}
+function goOnline(){
+ db.ref('users/'+user.phone).update({online:true,lastSeen:Date.now()});
+ db.ref('users/'+user.phone+'/presence').set(true);
+ db.ref('users/'+user.phone+'/presence').onDisconnect().remove();
+ db.ref('users/'+user.phone).onDisconnect().update({online:false,lastSeen:Date.now()});
+}
+goOnline(); setInterval(goOnline,25000);
+window.addEventListener('beforeunload',()=>{db.ref('users/'+user.phone).update({online:false,lastSeen:Date.now()});});
+db.ref('banned/'+user.phone).once('value').then(s=>{if(s.val()){alert('BANNED 🚫'); localStorage.clear(); location.href='index.html';}});
+const ref=(d,p)=>firebase.database().ref(p);
+const push=(r,d)=>r.push(d);
+const get=(r)=>r.once('value');
+const update=(r,d)=>r.update(d);
+function formatLastSeen(ts){
+ if(!ts) return 'Offline';
+ let diff=Date.now()-ts;
+ if(diff<60000) return 'online';
+ if(diff<3600000) return 'last seen '+Math.floor(diff/60000)+'m ago';
+ if(diff<86400000) return 'last seen '+Math.floor(diff/3600000)+'h ago';
+ return 'last seen '+new Date(ts).toLocaleDateString();
+}
+</script>
+<div class="top"><b>💛 Elifons Gold</b><div style="display:flex;gap:8px"><span onclick="openChat('GENERAL_LIVE','🌍 General Live','',true)" style="background:red;padding:4px 8px;border-radius:10px;font-size:11px;cursor:pointer">🔴 LIVE</span><span onclick="openChat('ELIFONS_AI','Elifons AI 🤖','',false,true)" style="cursor:pointer">🤖 AI</span></div></div>
+<div class="fb-nav"><span class="active" onclick="showPage('home',this)">🏠 Home</span><span onclick="showPage('people',this)">👥 People</span><span onclick="showPage('chats',this)">💬 Chats</span><span onclick="showPage('groups',this)">👑 Groups</span></div>
 
-<div class="top"><b>Elifons Gold</b><div style="display:flex;gap:8px"><span onclick="document.getElementById('storyInput').click()">➕ Story</span><span onclick="publishPost()">📤 Post</span></div></div>
-<div class="fb-nav"><span class="active" onclick="showPage('home',this)">🏠 Home</span><span onclick="showPage('users',this)">👥 People</span><span onclick="showPage('chats',this)">💬 Chats</span><span onclick="showPage('groups',this)">👑 Groups</span><span onclick="showPage('profile',this)">👤 Me</span></div>
-
-<input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="handleFile()">
 <input type="file" id="storyInput" hidden accept="image/*,video/*" onchange="handleStory()">
+<input type="file" id="postFile" hidden accept="image/*,video/*" onchange="handlePostFile()">
 
-<div id="home" class="page active">
- <div id="storyBar" class="story-bar"></div>
- <div style="padding:10px;max-width:600px;margin:0 auto"><input id="capInput" placeholder="What's on your mind, ${user.name}? 💛" style="width:100%;padding:12px;border-radius:20px;border:1px solid #333;background:#222;color:#fff"><button onclick="publishPost()" style="margin-top:8px;width:100%;padding:10px;background:#d4af37;border:none;border-radius:10px;font-weight:bold">Post</button></div>
- <div id="feed"></div>
-</div>
-
-<div id="users" class="page">
- <div style="padding:10px"><input id="searchUser" placeholder="🔍 Search people..." oninput="filterPeople()" style="width:100%;padding:10px;border-radius:20px;background:#222;border:1px solid #333;color:#fff">
- <div id="peopleList"></div></div>
-</div>
-
-<div id="chats" class="page"><div id="chatList"></div></div>
-
-<div id="groups" class="page"><div style="padding:10px"><button onclick="openGroupModal()" style="width:100%;padding:12px;background:#d4af37;border:none;border-radius:10px;font-weight:bold">➕ New Group</button></div><div id="groupList"></div></div>
-
-<div id="profile" class="page" style="text-align:center;padding:20px"><img src="${myPic}" id="myProfilePic" style="width:80px;height:80px;border-radius:50%;border:3px solid #d4af37"><h3 id="myName"></h3><p id="myPhone" style="color:gray"></p><button onclick="localStorage.clear();location.href='index.html'" style="background:#ff4444;color:#fff;margin-top:20px">Logout</button></div>
+<div id="home" class="page active"><div id="storyBar" style="display:flex;gap:10px;overflow-x:auto;padding:10px;background:#111"></div><div style="padding:10px;max-width:600px;margin:0 auto"><input id="capInput" placeholder="What's on your mind?" style="width:100%;padding:12px;border-radius:20px;background:#222;border:1px solid #333;color:#fff"><div style="display:flex;gap:6px;margin-top:8px"><button onclick="document.getElementById('postFile').click()" style="flex:1;padding:10px;background:#222;border:1px solid #333;color:#fff;border-radius:10px">📸 Media</button><button onclick="publishPost()" style="flex:1;padding:10px;background:#d4af37;border:none;border-radius:10px;font-weight:bold">Post</button></div></div><div id="feed"></div></div>
+<div id="people" class="page"><div style="padding:10px"><input id="searchUser" placeholder="🔍 Search..." oninput="filterPeople()" style="width:100%;padding:12px;border-radius:20px;background:#222;border:1px solid #333;color:#fff"><div id="peopleList"></div></div></div>
+<div id="chats" class="page"><div style="padding:10px;display:flex;gap:8px"><button onclick="openChat('GENERAL_LIVE','🌍 General Live Group','',true)" style="flex:1;background:red;color:#fff;padding:12px;border-radius:12px;border:none;font-weight:bold">🌍 General Live</button><button onclick="openChat('ELIFONS_AI','Elifons AI 🤖','',false,true)" style="flex:1;background:#1a2a3a;color:#d4af37;padding:12px;border-radius:12px;border:1px solid #d4af37">🤖 AI</button></div><div id="chatList"></div></div>
+<div id="groups" class="page"><div style="padding:10px"><button onclick="openGroupModal()" style="width:100%;padding:12px;background:#d4af37;border:none;border-radius:12px;font-weight:bold">➕ New Group</button></div><div id="groupList"></div></div>
 
 <div id="chatWindow" class="chat-window">
- <div style="background:#111;padding:10px;display:flex;align-items:center;gap:10px;border-bottom:2px solid #d4af37"><span onclick="closeChat()" style="font-size:20px;cursor:pointer">←</span><div id="chatHeaderPic"></div><b id="chatHeaderName"></b></div>
- <div id="messages" class="messages"></div>
- <div class="input-bar"><input id="chatInput" placeholder="Type message..."><button onclick="sendMessage()" style="background:#d4af37;border:none;padding:10px 15px;border-radius:20px;font-weight:bold">Send</button></div>
+<div style="background:#111;padding:10px;display:flex;align-items:center;gap:10px;border-bottom:2px solid #d4af37"><span onclick="closeChat()" style="font-size:22px;cursor:pointer">←</span><div id="chatHeaderPic"></div><div><b id="chatHeaderName"></b><br><small id="chatHeaderStatus" class="lastseen">...</small><small id="typingStatus" class="typing" style="display:none"></small></div></div>
+<div id="messages" class="messages"></div>
+<div class="input-bar"><input id="chatInput" placeholder="Type..." oninput="onTyping()"><button onclick="sendMessage()" style="background:#d4af37;border:none;padding:12px 18px;border-radius:25px;font-weight:bold">Send</button></div>
 </div>
 
-<div id="groupModal" class="group-modal"><div class="group-box"><h3 style="color:#d4af37">New Group</h3><input id="groupName" placeholder="Group Name"><div id="selectedMembers" style="margin:10px 0;display:flex;flex-wrap:wrap;gap:5px"></div><div id="usersList"></div><button onclick="createGroup()" style="width:100%;margin-top:10px;background:#d4af37">Create Group</button><button onclick="closeGroupModal()" style="width:100%;background:#333;color:#fff">Cancel</button></div></div>
-
+<div id="groupModal" class="group-modal"><div class="group-box"><h3 style="color:#d4af37">New Group</h3><input id="groupName" placeholder="Group Name"><div id="selectedMembers" style="margin:10px 0;display:flex;flex-wrap:wrap;gap:5px"></div><div id="usersList"></div><button onclick="createGroup()" style="width:100%;margin-top:10px;background:#d4af37;padding:12px;border:none;border-radius:10px;font-weight:bold">Create</button><button onclick="closeGroupModal()" style="width:100%;background:#333;color:#fff;padding:10px;margin-top:5px;border:none;border-radius:10px">Cancel</button></div></div>
 <script>
-function showPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.fb-nav span').forEach(s=>s.classList.remove('active'));if(el)el.classList.add('active');}
-let mediaBase64=null;
-window.handleFile=()=>{let f=document.getElementById('fileInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{mediaBase64=e.target.result;};rd.readAsDataURL(f);};
+function showPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');if(el){document.querySelectorAll('.fb-nav span').forEach(s=>s.classList.remove('active'));el.classList.add('active');}}
+let postMedia=null;
+window.handlePostFile=()=>{let f=document.getElementById('postFile').files[0];if(!f)return;let r=new FileReader();r.onload=e=>{postMedia=e.target.result; alert('Media ready! Click Post');};r.readAsDataURL(f);};
 window.handleStory=()=>{let f=document.getElementById('storyInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{push(ref(db,'stories'),{name:user.name,pic:myPic,media:e.target.result,time:Date.now()}); alert('Story added!');};rd.readAsDataURL(f);};
-window.publishPost=()=>{
- let cap=document.getElementById('capInput').value.trim();
- if(!cap &&!mediaBase64) return alert('Type something');
- let type=mediaBase64&&mediaBase64.includes('video')?'video':'image';
- push(ref(db,'posts'),{name:user.name,pic:myPic,caption:cap,media:mediaBase64||'',type:type,likes:0,likedBy:{},time:Date.now()});
- document.getElementById('capInput').value=''; mediaBase64=null; alert('Posted!');
-};
-
+window.publishPost=()=>{let cap=document.getElementById('capInput').value.trim(); if(!cap &&!postMedia) return alert('Type something'); let type=postMedia&&postMedia.includes('video')?'video':'image'; push(ref(db,'posts'),{name:user.name,pic:myPic,phone:user.phone,caption:cap,media:postMedia||'',type:type,likes:0,time:Date.now()}); document.getElementById('capInput').value=''; postMedia=null; alert('Posted!');};
 function loadAll(){
  ref(db,'users').on('value',snap=>{
   let data=snap.val()||{}; let pl=document.getElementById('peopleList'); let cl=document.getElementById('chatList'); let ul=document.getElementById('usersList');
-  pl.innerHTML=''; cl.innerHTML=''; ul.innerHTML='';
+  pl.innerHTML=''; cl.innerHTML=''; if(ul) ul.innerHTML='';
+  let onlineCount=0;
   Object.values(data).forEach(u=>{
+   if(u.online) onlineCount++;
    if(u.phone===user.phone) return;
-   let online=u.online?'🟢':'⚫';
-   pl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${u.phone}','${u.name}','${u.pic}')"><img src="${u.pic}" style="width:40px;height:40px;border-radius:50%"><div><b>${u.name}</b> ${online}<br><small style="color:gray">${u.phone}</small></div><span style="margin-left:auto">💬</span></div>`;
-   cl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${u.phone}','${u.name}','${u.pic}')"><img src="${u.pic}" style="width:40px;height:40px;border-radius:50%"><div><b>${u.name}</b><br><small>Tap to chat</small></div></div>`;
-   ul.innerHTML+=`<div class="member"><span>👤 ${u.name}</span><button onclick="toggleMember('${u.name}','${u.phone}')" style="background:#222;border:1px solid #d4af37;padding:4px 10px;border-radius:10px;color:#d4af37">Add</button></div>`;
+   let isOnline=u.online;
+   let statusText=isOnline? '<span class="lastseen">🟢 online</span>' : `<span style="color:gray;font-size:11px">${formatLastSeen(u.lastSeen)}</span>`;
+   let dot=isOnline? '<div class="online-dot"></div>' : '';
+   let html=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${u.phone}','${u.name}','${u.pic}')"><div class="pic-wrap"><img src="${u.pic}" style="width:42px;height:42px;border-radius:50%;border:2px solid ${isOnline?'#00ff00':'#333'}">${dot}</div><div><b>${u.name} ${isOnline?'🟢':''}</b><br>${statusText}<br><small style="color:gray">${u.phone}</small></div><span style="margin-left:auto">💬</span></div>`;
+   pl.innerHTML+=html; cl.innerHTML+=html;
+   if(ul) ul.innerHTML+=`<div class="member"><span><div class="pic-wrap" style="display:inline-block"><img src="${u.pic}" style="width:30px;height:30px;border-radius:50%">${dot}</div> ${u.name} ${isOnline?'🟢':''}</span><button onclick="toggleMember('${u.name}')" style="background:#222;border:1px solid #d4af37;padding:4px 10px;border-radius:10px;color:#d4af37">Add</button></div>`;
   });
+  document.querySelector('.top b').innerText=`💛 Elifons Gold (${onlineCount} online)`;
  });
  ref(db,'posts').on('value',snap=>{
   let data=snap.val(); let feed=document.getElementById('feed'); feed.innerHTML='';
-  if(!data){feed.innerHTML='<p style="text-align:center;color:gray;padding:20px">No posts yet</p>';return;}
+  if(!data) return;
   Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>b.time-a.time).forEach(p=>{
    let media=p.media? (p.type==='video'? `<video src="${p.media}" controls style="width:100%"></video>` : `<img src="${p.media}" style="width:100%">`) : '';
-   feed.innerHTML+=`<div class="feed-post"><div class="post-head"><img src="${p.pic}"><div><b style="color:#d4af37">${p.name}</b><br><small style="color:gray">${new Date(p.time).toLocaleString()}</small></div></div><div style="padding:10px">${p.caption}</div>${media}<div class="actions"><span onclick="likePost('${p.key}')">💛 Like ${p.likes||0}</span><span onclick="openChat('${p.name}','${p.name}','${p.pic}')">💬 Chat</span></div></div>`;
+   feed.innerHTML+=`<div class="feed-post"><div class="post-head"><img src="${p.pic}"><div><b style="color:#d4af37">${p.name}</b><br><small style="color:gray">${new Date(p.time).toLocaleString()}</small></div></div><div class="post-caption">${p.caption||''}</div>${media}<div class="actions"><span onclick="likePost('${p.key}')">💛 ${p.likes||0}</span><span onclick="openChat('${p.phone||p.name}','${p.name}','${p.pic}')">💬 Chat</span></div></div>`;
   });
  });
  ref(db,'groups').on('value',snap=>{
-  let data=snap.val(); let gl=document.getElementById('groupList'); gl.innerHTML='';
-  if(!data)return; Object.values(data).forEach(g=>{
+  let data=snap.val(); let gl=document.getElementById('groupList'); if(!gl) return; gl.innerHTML='';
+  if(!data) return; Object.values(data).forEach(g=>{
+   if(g.id==='GENERAL_LIVE') return;
    if(!g.members||!g.members.includes(user.name)) return;
    gl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${g.id}','${g.name}','',true)"><div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(45deg,#d4af37,#ff9800);display:flex;align-items:center;justify-content:center">👥</div><div><b style="color:#d4af37">${g.name}</b><br><small>${g.members.length} members</small></div></div>`;
   });
  });
- ref(db,'stories').on('value',snap=>{
-  let data=snap.val(); let bar=document.getElementById('storyBar'); bar.innerHTML=`<div class="story" onclick="document.getElementById('storyInput').click()"><img src="${myPic}" style="border-color:gray"><br><small>You</small></div>`;
-  if(!data) return; Object.values(data).slice(-15).forEach(s=>{
-   bar.innerHTML+=`<div class="story"><img src="${s.pic}"><br><small>${s.name.split(' ')[0]}</small></div>`;
-  });
- });
 }
 setTimeout(loadAll,500);
-document.getElementById('myName').innerText=user.name; document.getElementById('myPhone').innerText=user.phone;
-
-window.likePost=async(k)=>{
- let s=await get(ref(db,'posts/'+k)); let p=s.val(); if(!p) return;
- await update(ref(db,'posts/'+k),{likes:(p.likes||0)+1});
-};
-window.selected=[];
-window.toggleMember=(name,phone)=>{
- if(window.selected.includes(name)) window.selected=window.selected.filter(n=>n!==name); else window.selected.push(name);
- document.getElementById('selectedMembers').innerHTML=window.selected.map(n=>`<span style="background:#d4af37;color:#000;padding:4px 8px;border-radius:10px;font-size:12px;margin:2px">${n}</span>`).join('');
-};
+window.likePost=async(k)=>{let s=await get(ref(db,'posts/'+k)); let p=s.val(); if(!p) return; await update(ref(db,'posts/'+k),{likes:(p.likes||0)+1});};
+window.selected=[]; window.toggleMember=(name)=>{ if(window.selected.includes(name)) window.selected=window.selected.filter(n=>n!==name); else window.selected.push(name); document.getElementById('selectedMembers').innerHTML=window.selected.map(n=>`<span style="background:#d4af37;color:#000;padding:4px 8px;border-radius:10px;font-size:12px;margin:2px">${n}</span>`).join(''); };
 window.openGroupModal=()=>{document.getElementById('groupModal').style.display='flex'; window.selected=[]; document.getElementById('selectedMembers').innerHTML=''; document.getElementById('groupName').value='';};
 window.closeGroupModal=()=>{document.getElementById('groupModal').style.display='none';};
-window.createGroup=async()=>{
- let gname=document.getElementById('groupName').value.trim(); if(!gname) return alert('Enter name');
- let members=[...new Set([user.name,...window.selected])];
- let id='GROUP_'+gname.replace(/\s/g,'_')+'_'+Date.now();
- let group={id:id,name:gname,members:members,admin:user.name,time:Date.now()};
- let snap=await push(ref(db,'groups'),group); await update(ref(db,'groups/'+snap.key),{key:snap.key});
- closeGroupModal(); alert('Group created!'); openChat(id,gname,'',true);
-};
-
-function getChatId(otherPhone){
- let phones=[user.phone, otherPhone].sort(); return 'CHAT_'+phones[0]+'_'+phones[1];
+window.createGroup=async()=>{let gname=document.getElementById('groupName').value.trim(); if(!gname) return alert('Enter name'); let members=[...new Set([user.name,...window.selected])]; let id='GROUP_'+gname.replace(/\s/g,'_')+'_'+Date.now(); let group={id:id,name:gname,members:members,admin:user.name,time:Date.now()}; let snap=await push(ref(db,'groups'),group); await update(ref(db,'groups/'+snap.key),{key:snap.key}); push(ref(db,'chats/'+id),{text:`${user.name} created group "${gname}"`,sender:'System',type:'system',time:Date.now()}); closeGroupModal(); openChat(id,gname,'',true);};
+function getAIReply(q){
+ let l=q.toLowerCase();
+ if(l.includes('caption')) return "🔥 Viral Captions:\n1. Golden vibes only ✨\n2. Less perfection, more authenticity 💛\n3. Your story matters — share it 🚀";
+ if(l.includes('group')) return "👥 Group Ideas:\n- Gold Family 💛\n- Business Hustlers 🚀\n- Study Squad 📚";
+ if(l.includes('idea')||l.includes('post')) return "💡 Post Ideas:\n- Morning motivation ☀️\n- Behind the scenes 🎬\n- Ask a question ❓\n- Share a win 🏆";
+ return `Hi ${user.name}! 💛 I'm Elifons AI 🤖 Ask me for captions, ideas, group names!`;
 }
+let typingListener=null; let statusListener=null;
 window.openChat=(id,name,pic,isGroup)=>{
- window.currentChat=id; window.isGroupChat=isGroup;
+ window.currentChat=id; window.isGroupChat=isGroup; window.isAIChat=(id==='ELIFONS_AI');
  document.getElementById('chatWindow').style.display='flex';
  document.getElementById('chatHeaderName').innerText=name;
- document.getElementById('chatHeaderPic').innerHTML=pic?`<img src="${pic}" style="width:36px;height:36px;border-radius:50%">`:'';
- let chatRefId=isGroup? id : getChatId(id);
+ document.getElementById('chatHeaderPic').innerHTML=pic?`<img src="${pic}" style="width:36px;height:36px;border-radius:50%">`:`<div style="width:36px;height:36px;border-radius:50%;background:${id==='GENERAL_LIVE'?'red':'#d4af37'};display:flex;align-items:center;justify-content:center">${isGroup?'👥':(window.isAIChat?'🤖':'👤')}</div>`;
+ let chatRefId=isGroup? id : (window.isAIChat? 'CHAT_AI_'+user.phone : getChatId(id));
+ if(!isGroup &&!window.isAIChat){
+  if(statusListener) statusListener.off();
+  statusListener=ref(db,'users/'+id);
+  statusListener.on('value',s=>{let u=s.val(); if(!u) return; let txt=u.online? '🟢 online' : formatLastSeen(u.lastSeen); document.getElementById('chatHeaderStatus').innerHTML=txt; document.getElementById('chatHeaderStatus').style.color=u.online?'#25D366':'gray';});
+  if(typingListener) typingListener.off();
+  typingListener=ref(db,'typing/'+chatRefId);
+  typingListener.on('value',snap=>{let data=snap.val()||{}; let other=Object.entries(data).filter(([k])=>k!==user.phone); if(other.length>0){document.getElementById('typingStatus').style.display='inline'; document.getElementById('typingStatus').innerText=other[0][1].name+' is typing...'; document.getElementById('chatHeaderStatus').style.display='none';}else{document.getElementById('typingStatus').style.display='none'; document.getElementById('chatHeaderStatus').style.display='inline';}});
+ }else{
+  document.getElementById('chatHeaderStatus').innerText= isGroup? (id==='GENERAL_LIVE'?'🌍 Everyone • LIVE':'Group chat') : '🤖 Always online';
+  if(typingListener) typingListener.off();
+  typingListener=ref(db,'typing/'+chatRefId);
+  typingListener.on('value',snap=>{let data=snap.val()||{}; let others=Object.entries(data).filter(([k])=>k!==user.phone); if(others.length>0){document.getElementById('typingStatus').style.display='inline'; document.getElementById('typingStatus').innerText=others.map(o=>o[1].name).join(', ')+' typing...';}else{document.getElementById('typingStatus').style.display='none';}});
+ }
  ref(db,'chats/'+chatRefId).on('value',snap=>{
   let data=snap.val()||{}; let msgs=document.getElementById('messages'); msgs.innerHTML='';
+  if(Object.keys(data).length===0 && window.isAIChat){msgs.innerHTML=`<div class="msg ai">Hi ${user.name}! 💛 I'm Elifons AI 🤖<br>Ask me anything!</div>`;}
   Object.values(data).sort((a,b)=>a.time-b.time).forEach(m=>{
    let isMe=m.sender===user.name || m.senderPhone===user.phone;
-   msgs.innerHTML+=`<div class="msg ${isMe?'me':'them'}"><b style="font-size:11px">${isMe?'You':m.sender}</b><br>${m.text}</div>`;
+   if(m.type==='system'){msgs.innerHTML+=`<div class="msg system">${m.text}</div>`;}
+   else if(m.isAI){msgs.innerHTML+=`<div class="msg ai"><b>🤖 AI</b><br>${m.text.replace(/\n/g,'<br>')}</div>`;}
+   else{msgs.innerHTML+=`<div class="msg ${isMe?'me':'them'}"><b style="font-size:11px">${isMe?'You':m.sender}</b><br>${m.text}<br><small style="font-size:10px;opacity:0.6">${new Date(m.time).toLocaleTimeString()} ${isMe?'✓✓':''}</small></div>`;}
   });
   msgs.scrollTop=msgs.scrollHeight;
  });
 };
-window.closeChat=()=>{document.getElementById('chatWindow').style.display='none';};
-window.sendMessage=()=>{
- let txt=document.getElementById('chatInput').value.trim(); if(!txt) return;
- let chatRefId=window.isGroupChat? window.currentChat : getChatId(window.currentChat);
- push(ref(db,'chats/'+chatRefId),{text:txt,sender:user.name,senderPhone:user.phone,time:Date.now()});
- document.getElementById('chatInput').value='';
-};
+window.closeChat=()=>{document.getElementById('chatWindow').style.display='none'; if(typingListener) typingListener.off(); if(statusListener) statusListener.off(); if(window.currentChat){let chatRefId=window.isGroupChat? window.currentChat : (window.isAIChat? 'CHAT_AI_'+user.phone : getChatId(window.currentChat)); db.ref('typing/'+chatRefId+'/'+user.phone).remove();} window.currentChat=null;};
+let typingTimer=null;
+window.onTyping=()=>{if(!window.currentChat) return; let chatRefId=window.isGroupChat? window.currentChat : (window.isAIChat? 'CHAT_AI_'+user.phone : getChatId(window.currentChat)); let path=`typing/${chatRefId}/${user.phone}`; db.ref(path).set({name:user.name,time:Date.now()}); db.ref(path).onDisconnect().remove(); clearTimeout(typingTimer); typingTimer=setTimeout(()=>{db.ref(path).remove();},2500);};
+window.sendMessage=()=>{let txt=document.getElementById('chatInput').value.trim(); if(!txt) return; let chatRefId=window.isGroupChat? window.currentChat : (window.isAIChat? 'CHAT_AI_'+user.phone : getChatId(window.currentChat)); push(ref(db,'chats/'+chatRefId),{text:txt,sender:user.name,senderPhone:user.phone,time:Date.now()}); document.getElementById('chatInput').value=''; db.ref('typing/'+chatRefId+'/'+user.phone).remove(); if(window.isAIChat){setTimeout(()=>{push(ref(db,'chats/'+chatRefId),{text:getAIReply(txt),sender:'Elifons AI 🤖',isAI:true,time:Date.now()});},700);}};
 function filterPeople(){let q=document.getElementById('searchUser').value.toLowerCase();document.querySelectorAll('#peopleList div').forEach(d=>{d.style.display=d.innerText.toLowerCase().includes(q)?'flex':'none';});}
 </script>
 </body></html>
