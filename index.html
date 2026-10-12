@@ -14,9 +14,9 @@ button{width:100%;padding:13px;background:linear-gradient(90deg,#d4af37,#ffcc00)
 .link{margin-top:15px;font-size:13px;color:gray}
 .msg{min-height:18px;margin-top:12px;font-size:13px;color:#d4af37}
 </style></head><body>
-
+<button onclick="localStorage.clear(); db.ref('users/'+document.getElementById('phone').value.trim()).remove().then(()=>alert('Cleared! Now create new account')); location.reload();" style="background:#333;color:#fff;margin-top:10px;font-size:12px">🗑️ Clear & Reset Account</button>
+ 
  <div class="box">
-  <button onclick="localStorage.clear(); db.ref('users/'+document.getElementById('phone').value.trim()).remove().then(()=>alert('Cleared! Now create new account')); location.reload();" style="background:#333;color:#fff;margin-top:10px;font-size:12px">🗑️ Clear & Reset Account</button>
 <h2>Elifons Gold 💛</h2>
 <p>Gold + Groups + AI</p>
 <label>👤 Full Name</label>
