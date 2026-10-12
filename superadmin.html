@@ -1,68 +1,286 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Super Admin - Elifons</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Super Admin - Elifons Gold</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<style>body{margin:0;background:#000;color:#fff;font-family:Arial}header{background:linear-gradient(90deg,#d4af37,#ffcc00);color:#000;padding:15px;text-align:center;font-weight:bold}.tabs{display:flex;background:#111;overflow-x:auto}.tab{padding:12px 16px;cursor:pointer;color:gray;white-space:nowrap}.tab.active{color:#d4af37;border-bottom:2px solid #d4af37}.content{display:none;padding:12px}.content.active{display:block}.card{background:#111;border:1px solid #222;padding:12px;border-radius:12px;margin:8px 0}.stat{display:flex;gap:8px}.stat div{flex:1;background:#111;border:1px solid #222;padding:12px;border-radius:10px;text-align:center}.stat b{color:#d4af37;font-size:20px;display:block}button{padding:8px 12px;background:#d4af37;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin:3px}input{width:100%;padding:10px;background:#222;border:1px solid #333;color:#fff;border-radius:10px;margin:6px 0}#loginBox{max-width:350px;margin:50px auto;background:#111;border:2px solid #d4af37;border-radius:15px;padding:20px}</style></head><body>
-<div id="loginBox"><h3 style="color:#d4af37;text-align:center">🔐 SUPER ADMIN</h3><input id="p" placeholder="Phone 08000000000"><input id="pw" type="password" placeholder="admin123"><button onclick="login()" style="width:100%">Enter</button></div>
-<div id="adminArea" style="display:none"><header>💛 ELIFONS SUPER ADMIN - LIVE FROM FIREBASE</header><div class="tabs"><div class="tab active" onclick="tab(event,'stats')">📊 Stats</div><div class="tab" onclick="tab(event,'users')">👥 Users</div><div class="tab" onclick="tab(event,'chats')">💬 All Chats</div><div class="tab" onclick="tab(event,'posts')">📸 Posts</div><div class="tab" onclick="tab(event,'groups')">👑 Groups</div><div class="tab" onclick="tab(event,'stories')">📖 Stories</div></div>
-<div id="stats" class="content active"><div class="stat"><div><b id="tUsers">0</b><span>Users</span></div><div><b id="tChats">0</b><span>Chats</span></div><div><b id="tPosts">0</b><span>Posts</span></div><div><b id="tGroups">0</b><span>Groups</span></div></div><div id="statsList" class="card"></div></div>
-<div id="users" class="content"><input id="search" placeholder="Search name..." oninput="filterUsers()"><div id="usersList"></div></div>
-<div id="chats" class="content"><div id="chatsList"></div></div>
-<div id="posts" class="content"><div id="postsList"></div></div>
-<div id="groups" class="content"><div id="groupsList"></div></div>
-<div id="stories" class="content"><div id="storiesList"></div></div>
-</div><script>
-const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqJzQeXqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
-firebase.initializeApp(firebaseConfig);const db=firebase.database();
-const ADMIN_PHONE="07025934032",ADMIN_PASS="admin123";
-function login(){let p=document.getElementById('p').value.trim(),pw=document.getElementById('pw').value.trim();if(p===ADMIN_PHONE&&pw===ADMIN_PASS){document.getElementById('loginBox').style.display='none';document.getElementById('adminArea').style.display='block';loadAll();}else alert('Wrong');}
-function tab(e,id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));document.getElementById(id).classList.add('active');e.target.classList.add('active');}
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;padding:10px}
+.top{background:#111;border:2px solid #d4af37;padding:15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:10px;z-index:10;flex-wrap:wrap;gap:10px}
+.stat-box{background:#222;padding:8px 12px;border-radius:10px;text-align:center;min-width:80px;border:1px solid #333;cursor:pointer}
+.stat-box b{color:#d4af37;font-size:18px;display:block}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0;position:sticky;top:95px;background:#000;z-index:9}
+.tabs span{padding:8px 12px;background:#222;border-radius:20px;cursor:pointer;white-space:nowrap;font-size:12px}
+.tabs span.active{background:#d4af37;color:#000;font-weight:bold}
+.page{display:none}.page.active{display:block}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:12px;margin:8px 0}
+.online{border-color:#00ff00!important}
+.badge{padding:2px 6px;border-radius:10px;font-size:10px;margin-left:5px}
+.badge-online{background:#00ff00;color:#000}
+.badge-off{background:#444;color:#fff}
+.badge-like{background:#ff3366;color:#fff}
+.badge-view{background:#d4af37;color:#000}
+button{padding:6px 10px;border:none;border-radius:8px;cursor:pointer;font-size:12px;margin:2px}
+.btn-ban{background:#ff4444;color:#fff}
+.btn-del{background:#333;color:#fff}
+.btn-view{background:#d4af37;color:#000;font-weight:bold}
+.btn-excel{background:#00aa00;color:#fff;font-weight:bold}
+img.thumb{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin:5px 0}
+.names-list{background:#000;border:1px solid #333;border-radius:10px;padding:10px;max-height:200px;overflow-y:auto;margin:10px 0}
+.names-list span{display:inline-block;background:#222;border:1px solid #d4af37;padding:4px 8px;border-radius:15px;margin:3px;font-size:12px}
+.search{width:100%;padding:12px;border-radius:20px;background:#222;border:1px solid #333;color:#fff;margin:10px 0}
+.actions-bar{background:#111;border:1px solid #333;border-radius:10px;padding:10px;margin:10px 0;display:flex;gap:6px;flex-wrap:wrap}
+</style></head><body>
+<script>
+const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();
+let admin=JSON.parse(localStorage.getItem('elifons_user')||'null');
+if(!admin || admin.phone!=='08000000000'){ location.href='index.html'; }
+function fmt(ts){ return new Date(ts).toLocaleString(); }
+</script>
+
+<div class="top">
+<div><b style="color:#d4af37">👑 SuperAdmin</b><br><small>Elifons Gold - Full Control</small></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<div class="stat-box" onclick="showPage('users',document.querySelectorAll('.tabs span')[0])"><b id="totalUsers">0</b><small>👥 Users</small></div>
+<div class="stat-box" onclick="showPage('online',document.querySelectorAll('.tabs span')[1])"><b id="onlineUsers" style="color:#00ff00">0</b><small>🟢 Online</small></div>
+<div class="stat-box" onclick="showPage('posts',document.querySelectorAll('.tabs span')[2])"><b id="totalPosts">0</b><small>📸 Posts</small></div>
+<div class="stat-box" onclick="showPage('stories',document.querySelectorAll('.tabs span')[3])"><b id="totalStories">0</b><small>🎬 Stories</small></div>
+<div class="stat-box"><b id="totalChats">0</b><small>💬 Chats</small></div>
+</div>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+<button onclick="exportUsers()" class="btn-excel">📊 Export Excel</button>
+<button onclick="location.href='dashboard.html'" style="background:#222;color:#fff">🏠 Dashboard</button>
+<button onclick="localStorage.clear();location.href='index.html'" style="background:#ff4444;color:#fff">Logout</button>
+</div>
+</div>
+
+<div class="tabs">
+<span class="active" onclick="showPage('users',this)">👥 Users + Names</span>
+<span onclick="showPage('online',this)">🟢 Online Now</span>
+<span onclick="showPage('posts',this)">📸 Posts + Likes + Comments</span>
+<span onclick="showPage('stories',this)">🎬 Stories + Viewers + Likes</span>
+<span onclick="showPage('chats',this)">💬 Chats + LIVE + AI</span>
+<span onclick="showPage('groups',this)">👑 Groups</span>
+<span onclick="showPage('banned',this)">🚫 Banned</span>
+<span onclick="showPage('tools',this)">🛠️ Tools</span>
+</div>
+
+<div id="users" class="page active">
+<h3>👥 All Users (<span id="usersCountText">0</span> users total)</h3>
+<input id="searchAll" class="search" placeholder="🔍 Search by name or phone..." oninput="filterUsers()">
+<div style="background:#111;border:1px solid #d4af37;border-radius:10px;padding:12px;margin:10px 0">
+<b style="color:#d4af37">📋 All Names List (Total: <span id="namesTotal">0</span>):</b><br>
+<div id="allNamesList" class="names-list"></div>
+<div style="display:flex;gap:5px;margin-top:8px">
+<button onclick="copyNames()" style="flex:1;background:#d4af37;color:#000;padding:10px;border-radius:10px;font-weight:bold">📋 Copy All Names</button>
+<button onclick="copyPhones()" style="flex:1;background:#222;color:#fff;padding:10px;border-radius:10px;border:1px solid #d4af37">📱 Copy All Phones</button>
+<button onclick="exportUsers()" style="flex:1;background:#00aa00;color:#fff;padding:10px;border-radius:10px">📊 Excel</button>
+</div>
+</div>
+<div id="usersList"></div>
+</div>
+
+<div id="online" class="page"><h3>🟢 Online Now (<span id="onlineCountText">0</span> online)</h3><div id="allOnlineNames" class="names-list"></div><div id="onlineList"></div></div>
+<div id="posts" class="page"><h3>📸 Posts (<span id="postsCountText">0</span>) - Likes + Comments + Who Liked</h3><div id="postsList"></div></div>
+<div id="stories" class="page"><h3>🎬 Stories (<span id="storiesCountText">0</span>) - Viewers + Likes + Replies</h3><div id="storiesList"></div></div>
+<div id="chats" class="page"><h3>💬 All Chats + 🌍 LIVE + 🤖 AI</h3><div class="actions-bar"><button onclick="deleteAllChats()" style="background:#ff4444;color:#fff">🗑️ Delete ALL Chats</button><button onclick="loadAll()" style="background:#222;color:#fff">🔄 Refresh</button></div><div id="chatsList"></div></div>
+<div id="groups" class="page"><h3>👑 Groups</h3><div id="groupsList"></div></div>
+<div id="banned" class="page"><h3>🚫 Banned Users</h3><div id="bannedList"></div></div>
+<div id="tools" class="page">
+<h3>🛠️ SuperAdmin Tools - Old Features</h3>
+<div class="card">
+<b>📊 Data Management:</b><br><br>
+<button onclick="exportUsers()" class="btn-excel">📊 Export Users to Excel (CSV)</button>
+<button onclick="exportPosts()" class="btn-excel">📸 Export Posts</button><br><br>
+<b>🗑️ Danger Zone:</b><br><br>
+<button onclick="deleteAllPosts()" style="background:#ff4444;color:#fff">🗑️ Delete ALL Posts</button>
+<button onclick="deleteAllStories()" style="background:#ff4444;color:#fff">🗑️ Delete ALL Stories</button>
+<button onclick="deleteAllChats()" style="background:#ff4444;color:#fff">🗑️ Delete ALL Chats</button>
+<button onclick="clearExpiredStories()" style="background:#ff8800;color:#fff">🧹 Clear Expired Stories</button><br><br>
+<small style="color:gray">Total users: <span id="toolsUsers">0</span> | Use with caution!</small>
+</div>                                                              
+</div>
+<script>
+function showPage(id,el){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tabs span').forEach(s=>s.classList.remove('active')); if(el) el.classList.add('active'); }
+let allUsersData=[];
 function loadAll(){
-  // Users from posts (since you save name in posts) + also check elifons_users if exists in RTDB
-  db.ref('posts').on('value',snap=>{
-    let data=snap.val()||{}; let names={};
-    Object.values(data).forEach(p=>names[p.name]= {name:p.name,pic:p.pic,last: p.time});
-    let count=Object.keys(names).length;
-    document.getElementById('tUsers').textContent=count;
-    let ul=document.getElementById('usersList'); ul.innerHTML=''; let sl=document.getElementById('statsList'); sl.innerHTML='';
-    Object.values(names).forEach(u=>{
-      ul.innerHTML+=`<div class="card" style="display:flex;justify-content:space-between"><div><b>${u.name}</b><br><small>Last post: ${new Date(u.last).toLocaleString()}</small></div><div><button onclick="banUser('${u.name}')">Ban</button><button onclick="if(confirm('Delete posts of ${u.name}?'))deleteUserPosts('${u.name}')" style="background:#ff4444;color:#fff">Del Posts</button></div></div>`;
-      sl.innerHTML+=`• ${u.name}<br>`;
-    });
-    document.getElementById('tPosts').textContent=Object.keys(data).length;
-    let pl=document.getElementById('postsList'); pl.innerHTML=''; Object.entries(data).reverse().slice(0,100).forEach(([k,v])=>{
-      pl.innerHTML+=`<div class="card"><b style="color:#d4af37">${v.name}</b> - ${new Date(v.time).toLocaleString()}<br>${v.caption||''}<br>${v.media?`<img src="${v.media}" style="width:100%;max-height:200px">`:''}<br><button onclick="deletePost('${k}')" style="background:#ff4444;color:#fff">Delete Post</button></div>`;
-    });
+ db.ref('users').on('value',snap=>{
+  let data=snap.val()||{}; let users=Object.values(data);
+  allUsersData=users;
+  document.getElementById('totalUsers').innerText=users.length;
+  document.getElementById('usersCountText').innerText=users.length;
+  document.getElementById('namesTotal').innerText=users.length;
+  document.getElementById('toolsUsers').innerText=users.length;
+  document.getElementById('onlineUsers').innerText=users.filter(u=>u.online).length;
+  document.getElementById('onlineCountText').innerText=users.filter(u=>u.online).length;
+  let namesHtml=users.map(u=>`<span>${u.name} ${u.online?'🟢':''}</span>`).join('');
+  document.getElementById('allNamesList').innerHTML=namesHtml || '<small style="color:gray">No users yet</small>';
+  let onlineNames=users.filter(u=>u.online).map(u=>`<span style="border-color:#00ff00">${u.name} 🟢</span>`).join('');
+  document.getElementById('allOnlineNames').innerHTML=onlineNames || '<small style="color:gray">No one online</small>';
+  let ul=document.getElementById('usersList'); let ol=document.getElementById('onlineList');
+  ul.innerHTML=''; ol.innerHTML='';
+  users.sort((a,b)=>b.time-a.time).forEach(u=>{
+   let isOnline=u.online;
+   let html=`<div class="card user-card ${isOnline?'online':''}" data-name="${u.name.toLowerCase()}" data-phone="${u.phone}">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+     <img src="${u.pic}" style="width:45px;height:45px;border-radius:50%;border:2px solid ${isOnline?'#00ff00':'#333'}">
+     <div><b style="color:#d4af37">${u.name}</b> ${isOnline?'<span class="badge badge-online">ONLINE NOW</span>':'<span class="badge badge-off">OFFLINE</span>'}<br>
+     <small>📱 ${u.phone} • Last: ${fmt(u.lastSeen||u.time)}</small><br>
+     <small>Joined: ${fmt(u.time)}</small></div>
+     <div style="margin-left:auto"><button class="btn-view" onclick="viewChats('${u.phone}','${u.name}')">💬 Chats</button><button class="btn-ban" onclick="banUser('${u.phone}','${u.name}')">🚫 Ban</button><button class="btn-del" onclick="deleteUser('${u.phone}')">🗑️ Delete</button></div>
+    </div>
+   </div>`;
+   ul.innerHTML+=html;
+   if(isOnline) ol.innerHTML+=html;
   });
-  db.ref('groups').on('value',snap=>{
-    let data=snap.val()||{}; document.getElementById('tGroups').textContent=Object.keys(data).length;
-    let gl=document.getElementById('groupsList'); gl.innerHTML='';
-    Object.entries(data).forEach(([k,g])=>{
-      gl.innerHTML+=`<div class="card"><b>${g.name}</b> (${g.members?g.members.length:0} members)<br><small>Admin: ${g.admin} | ID: ${g.id}</small><br><small>${g.members?g.members.join(', '):''}</small><br><button onclick="deleteGroup('${k}','${g.id}')" style="background:#ff4444;color:#fff">Delete Group</button></div>`;
-    });
+  if(!ol.innerHTML) ol.innerHTML='<p style="color:gray;padding:20px">No one online now</p>';
+ });
+
+ db.ref('posts').on('value',snap=>{
+  let data=snap.val()||{};
+  document.getElementById('totalPosts').innerText=Object.keys(data).length;
+  document.getElementById('postsCountText').innerText=Object.keys(data).length;
+  let pl=document.getElementById('postsList'); pl.innerHTML='';
+  let posts=Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>b.time-a.time);
+  if(!posts.length){ pl.innerHTML='<p style="color:gray">No posts yet</p>'; return; }
+  posts.forEach(p=>{
+   let likedBy=p.likedBy? Object.values(p.likedBy).map(l=>l.name).join(', ') : 'No likes';
+   let comments=p.postComments? Object.values(p.postComments) : [];
+   pl.innerHTML+=`<div class="card">
+    <div style="display:flex;gap:8px;align-items:center"><img src="${p.pic}" style="width:36px;height:36px;border-radius:50%"><b style="color:#d4af37">${p.name}</b> <small>${p.phone} • ${fmt(p.time)}</small></div>
+    <p style="margin:8px 0">${p.caption||''}</p>
+    ${p.media? (p.type==='video'? `<video src="${p.media}" controls class="thumb"></video>` : `<img src="${p.media}" class="thumb">`) : ''}
+    <div style="margin:8px 0"><span class="badge badge-like">❤️ ${p.likes||0} Likes</span> <span class="badge badge-view">💬 ${comments.length} Comments</span></div>
+    <div style="background:#000;padding:8px;border-radius:8px;margin:5px 0"><small style="color:gray">Liked by (${p.likes||0}):</small> ${likedBy||'None'}</div>
+    <div style="background:#000;padding:8px;border-radius:8px;max-height:150px;overflow-y:auto"><small style="color:gray">All Comments:</small><br>
+    ${comments.length? comments.map(c=>`<div style="padding:5px;border-bottom:1px solid #222"><b>${c.name}:</b> ${c.text} <small style="color:gray">${fmt(c.time)}</small></div>`).join('') : 'No comments'}
+    </div>
+    <div style="margin-top:8px"><button class="btn-del" onclick="deletePost('${p.key}')">🗑️ Delete Post</button> <button class="btn-ban" onclick="banUser('${p.phone}','${p.name}')">🚫 Ban User</button></div>
+   </div>`;
   });
-  db.ref('chats').on('value',snap=>{
-    let data=snap.val()||{}; let total=0; let cl=document.getElementById('chatsList'); cl.innerHTML='';
-    Object.entries(data).forEach(([chatId, msgs])=>{
-      let arr=Object.values(msgs||{}); total+=arr.length;
-      cl.innerHTML+=`<div class="card"><b style="color:#d4af37">Chat: ${chatId}</b> - ${arr.length} msgs</div>`;
-      arr.slice(-10).reverse().forEach(m=>{
-        cl.innerHTML+=`<div style="background:#1a1a1a;margin:4px 0;padding:8px;border-radius:8px;font-size:13px"><b>${m.sender||m.from||'Unknown'}:</b> ${m.text||''} <small style="color:gray">${m.time?new Date(m.time).toLocaleTimeString():''}</small> <button onclick="deleteChat('${chatId}')" style="padding:2px 6px;font-size:10px;background:#ff4444;color:#fff">Del Chat</button></div>`;
-      });
-    });
-    document.getElementById('tChats').textContent=total;
+ });
+
+ db.ref('stories').on('value',snap=>{
+  let data=snap.val()||{};
+  document.getElementById('totalStories').innerText=Object.keys(data).length;
+  document.getElementById('storiesCountText').innerText=Object.keys(data).length;
+  let sl=document.getElementById('storiesList'); sl.innerHTML='';
+  let stories=Object.entries(data).map(([k,v])=>({fbKey:k,...v})).sort((a,b)=>b.time-a.time);
+  if(!stories.length){ sl.innerHTML='<p style="color:gray">No stories yet</p>'; return; }
+  stories.forEach(s=>{
+   let viewers=s.viewers? Object.values(s.viewers) : [];
+   let likedBy=s.likedBy? Object.values(s.likedBy) : [];
+   let comments=s.comments? Object.values(s.comments) : [];
+   let expired=s.expire<Date.now();
+   sl.innerHTML+=`<div class="card" style="${expired?'opacity:0.5':''}">
+    <div style="display:flex;gap:8px;align-items:center"><img src="${s.pic}" style="width:36px;height:36px;border-radius:50%"><b style="color:#d4af37">${s.name}</b> <small>${s.phone} • ${fmt(s.time)} ${expired?'<span style="color:red">EXPIRED</span>':''}</small></div>
+    ${s.type==='video'? `<video src="${s.media}" controls class="thumb" style="max-height:300px"></video>` : `<img src="${s.media}" class="thumb" style="max-height:300px">`}
+    <div><span class="badge badge-view">👁️ ${s.views||0} Views (${viewers.length} names)</span> <span class="badge badge-like">❤️ ${s.likes||0} Likes</span> <span class="badge" style="background:#222">💬 ${comments.length} Replies</span></div>
+    <div style="background:#000;padding:8px;border-radius:8px;margin:5px 0;max-height:80px;overflow-y:auto"><small style="color:gray">Viewers (${viewers.length}):</small> ${viewers.length? viewers.map(v=>`${v.name} (${fmt(v.time)})`).join(', ') : 'No views'}</div>
+    <div style="background:#000;padding:8px;border-radius:8px;margin:5px 0"><small style="color:gray">Liked by:</small> ${likedBy.length? likedBy.map(l=>l.name||'User').join(', ') : 'No likes'}</div>
+    <div style="background:#000;padding:8px;border-radius:8px;max-height:120px;overflow-y:auto"><small style="color:gray">Replies:</small><br>${comments.length? comments.map(c=>`<div style="padding:4px;border-bottom:1px solid #222"><b>${c.name}:</b> ${c.text} <small>${fmt(c.time)}</small></div>`).join('') : 'No replies'}</div>
+    <button class="btn-del" onclick="deleteStory('${s.fbKey}')">🗑️ Delete Story</button>
+   </div>`;
   });
-  db.ref('stories').on('value',snap=>{
-    let data=snap.val()||{}; let sl=document.getElementById('storiesList'); sl.innerHTML='';
-    Object.entries(data).forEach(([k,s])=>{
-      sl.innerHTML+=`<div class="card"><b>${s.name}</b> - ${new Date(s.time).toLocaleString()}<br><img src="${s.media}" style="width:100px;height:100px;object-fit:cover"><button onclick="deleteStory('${k}')" style="background:#ff4444;color:#fff">Delete</button></div>`;
-    });
+ });
+
+ db.ref('chats').on('value',snap=>{
+  let data=snap.val()||{};
+  document.getElementById('totalChats').innerText=Object.keys(data).length;
+  let cl=document.getElementById('chatsList'); cl.innerHTML='';
+  let entries=Object.entries(data).sort((a,b)=>b[0].localeCompare(a[0]));
+  if(!entries.length){ cl.innerHTML='<p style="color:gray">No chats yet - Users need to start chatting</p>'; return; }
+  entries.slice(0,50).forEach(([chatId,msgs])=>{
+   let arr=Object.values(msgs||{}).sort((a,b)=>a.time-b.time);
+   let last=arr[arr.length-1];
+   let isGeneral=chatId==='GENERAL_LIVE';
+   let isAI=chatId.includes('CHAT_AI_');
+   cl.innerHTML+=`<div class="card">
+    <b style="color:${isGeneral?'red': isAI?'#00ff00':'#d4af37'}">${chatId} ${isGeneral?'🌍 LIVE':''} ${isAI?'🤖 AI':''}</b> <small>• ${arr.length} msgs • Last: ${last? fmt(last.time):''} • Last: ${last? last.sender+': '+last.text.substring(0,30):''}</small>
+    <div style="background:#000;padding:8px;border-radius:8px;max-height:200px;overflow-y:auto;margin:6px 0">
+    ${arr.slice(-20).map(m=>`<div style="padding:4px;border-bottom:1px solid #111"><b>${m.sender||'Unknown'}:</b> ${m.text||''} <small style="color:gray">${m.time? fmt(m.time):''}</small> ${m.storyReply? ' (story reply)' : ''}</div>`).join('')}
+    </div>
+    <button class="btn-del" onclick="deleteChat('${chatId}')">🗑️ Delete Chat</button>
+   </div>`;
   });
+ });
+
+ db.ref('groups').on('value',snap=>{
+  let data=snap.val()||{}; let gl=document.getElementById('groupsList'); gl.innerHTML='';
+  if(!Object.keys(data).length){ gl.innerHTML='<p style="color:gray">No groups yet</p>'; return; }
+  Object.entries(data).forEach(([k,g])=>{
+   gl.innerHTML+=`<div class="card"><b style="color:#d4af37">${g.name||k}</b> <small>${g.id||k} • ${g.members? g.members.length+' members':''} • Admin: ${g.admin||''}</small><br><small>Members: ${g.members? g.members.join(', ') : 'Unknown'}</small><br><button class="btn-del" onclick="deleteGroup('${k}')">🗑️ Delete Group</button></div>`;
+  });
+ });
+
+ db.ref('banned').on('value',snap=>{
+  let data=snap.val()||{}; let bl=document.getElementById('bannedList'); bl.innerHTML='';
+  if(!Object.keys(data).length){ bl.innerHTML='<p style="color:gray">No banned users</p>'; return; }
+  Object.entries(data).forEach(([phone,info])=>{
+   bl.innerHTML+=`<div class="card"><b>${info.name||phone}</b> • ${phone} • Banned: ${info.time? fmt(info.time):''}<br><button class="btn-view" onclick="unbanUser('${phone}')">✅ Unban</button></div>`;
+  });
+ });
 }
-function deletePost(k){if(!confirm('Delete?'))return; db.ref('posts/'+k).remove();}
-function deleteGroup(k,id){if(!confirm('Delete group '+id+'?'))return; db.ref('groups/'+k).remove(); db.ref('chats/'+id).remove();}
-function deleteChat(chatId){if(!confirm('Delete all messages in '+chatId+'?'))return; db.ref('chats/'+chatId).remove();}
-function deleteStory(k){if(!confirm('Delete story?'))return; db.ref('stories/'+k).remove();}
-function deleteUserPosts(name){db.ref('posts').once('value').then(s=>{let d=s.val()||{};Object.entries(d).forEach(([k,v])=>{if(v.name===name) db.ref('posts/'+k).remove();});alert('Deleted posts of '+name);});}
-function banUser(name){let banned=JSON.parse(localStorage.getItem('elifons_banned')||'{}');banned[name]={time:Date.now()};localStorage.setItem('elifons_banned',JSON.stringify(banned));db.ref('banned/'+name.replace(/[^a-zA-Z0-9]/g,'_')).set({name:name,time:Date.now()});alert(name+' banned');}
-function filterUsers(){let q=document.getElementById('search').value.toLowerCase();document.querySelectorAll('#usersList.card').forEach(c=>{c.style.display=c.innerText.toLowerCase().includes(q)?'flex':'none';});}
-</script></body></html>
+setTimeout(loadAll,500);
+
+window.filterUsers=()=>{
+ let q=document.getElementById('searchAll').value.toLowerCase();
+ document.querySelectorAll('.user-card').forEach(card=>{
+  let name=card.getAttribute('data-name'); let phone=card.getAttribute('data-phone');
+  card.style.display=(name.includes(q)||phone.includes(q))?'block':'none';
+ });
+};
+window.copyNames=()=>{
+ let names=allUsersData.map(u=>`${u.name} (${u.phone}) ${u.online?'🟢 online':''}`).join('\n');
+ navigator.clipboard.writeText(names).then(()=>alert(`Copied ${allUsersData.length} users:\n${names.substring(0,200)}...`));
+};
+window.copyPhones=()=>{
+ let phones=allUsersData.map(u=>u.phone).join(', ');
+ navigator.clipboard.writeText(phones).then(()=>alert(`Copied ${allUsersData.length} phones:\n${phones}`));
+};
+window.exportUsers=()=>{
+ let csv="Name,Phone,Online,LastSeen,Joined,Pic\n";
+ allUsersData.forEach(u=>{ csv+=`"${u.name}","${u.phone}","${u.online?'Online':'Offline'}","${fmt(u.lastSeen||u.time)}","${fmt(u.time)}","${u.pic}"\n`; });
+ let blob=new Blob([csv],{type:'text/csv'});
+ let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`elifons_users_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+};
+window.exportPosts=()=>{
+ db.ref('posts').once('value').then(snap=>{
+  let data=snap.val()||{}; let csv="Name,Phone,Caption,Likes,Comments,Time\n";
+  Object.values(data).forEach(p=>{ csv+=`"${p.name}","${p.phone}","${(p.caption||'').replace(/"/g,'""')}","${p.likes||0}","${p.comments||0}","${fmt(p.time)}"\n`; });
+  let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`elifons_posts_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+ });
+};
+window.banUser=(phone,name)=>{ if(!confirm(`Ban ${name} (${phone})? They can't login again.`)) return; db.ref('banned/'+phone).set({name:name,phone:phone,time:Date.now()}); db.ref('users/'+phone).remove(); alert('Banned! 🚫'); };
+window.unbanUser=(phone)=>{ db.ref('banned/'+phone).remove(); alert('Unbanned! ✅'); };
+window.deleteUser=(phone)=>{ if(!confirm('Delete user '+phone+'?')) return; db.ref('users/'+phone).remove(); alert('Deleted'); };
+window.deletePost=(key)=>{ if(!confirm('Delete post?')) return; db.ref('posts/'+key).remove(); };
+window.deleteStory=(key)=>{ if(!confirm('Delete story?')) return; db.ref('stories/'+key).remove(); };
+window.deleteChat=(id)=>{ if(!confirm('Delete chat '+id+'?')) return; db.ref('chats/'+id).remove(); };
+window.deleteGroup=(k)=>{ if(!confirm('Delete group?')) return; db.ref('groups/'+k).remove(); };
+window.deleteAllPosts=()=>{ if(!confirm('DELETE ALL POSTS? This cannot be undone!')) return; if(!confirm('Are you SURE? All posts will be lost!')) return; db.ref('posts').remove(); alert('All posts deleted'); };
+window.deleteAllStories=()=>{ if(!confirm('DELETE ALL STORIES?')) return; db.ref('stories').remove(); alert('All stories deleted'); };
+window.deleteAllChats=()=>{ if(!confirm('DELETE ALL CHATS? All private + LIVE + AI chats will be gone!')) return; db.ref('chats').remove(); alert('All chats deleted'); };
+window.clearExpiredStories=()=>{
+ db.ref('stories').once('value').then(snap=>{
+  let data=snap.val()||{}; let count=0; let now=Date.now();
+  Object.entries(data).forEach(([k,s])=>{ if(s.expire<now){ db.ref('stories/'+k).remove(); count++; } });
+  alert(`Cleared ${count} expired stories`);
+ });
+};
+window.viewChats=(phone,name)=>{
+ showPage('chats',document.querySelectorAll('.tabs span')[4]);
+ document.getElementById('chatsList').innerHTML='<p>Searching chats for '+name+'...</p>';
+ db.ref('chats').once('value').then(snap=>{
+  let data=snap.val()||{}; let found=[];
+  Object.entries(data).forEach(([cid,msgs])=>{ if(cid.includes(phone)){ found.push([cid,msgs]); } });
+  let cl=document.getElementById('chatsList'); cl.innerHTML=`<h3>Chats for ${name} (${phone}) - ${found.length} chats found</h3>`;
+  found.forEach(([cid,msgs])=>{
+   let arr=Object.values(msgs||{}).sort((a,b)=>a.time-b.time);
+   cl.innerHTML+=`<div class="card"><b>${cid}</b> (${arr.length} msgs)<div style="background:#000;padding:8px;max-height:300px;overflow-y:auto">${arr.map(m=>`<div><b>${m.sender}:</b> ${m.text} <small>${fmt(m.time)}</small></div>`).join('')}</div></div>`;
+  });
+  if(!found.length) cl.innerHTML+='<p>No chats found for this user - they never chatted</p>';
+ });
+};
+</script>
+</body></html>
