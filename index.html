@@ -1,1 +1,83 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Elifons Gold - Login</title><style>body{margin:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.box{background:#111;border:2px solid #d4af37;padding:25px;border-radius:15px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 20px rgba(212,175,55,0.2)}h2{color:#d4af37;margin:0 0 5px;font-size:28px}p{color:gray;margin:0 0 20px;font-size:14px}label{display:block;text-align:left;color:#d4af37;font-size:13px;margin:12px 0 4px;font-weight:bold}input{width:100%;padding:13px;margin:0;border-radius:10px;border:1px solid #333;background:#222;color:#fff;font-size:15px;box-sizing:border-box}input:focus{border-color:#d4af37;outline:none}button{width:100%;padding:13px;background:linear-gradient(90deg,#d4af37,#ffcc00);border:none;border-radius:10px;font-weight:bold;margin-top:18px;font-size:16px;color:#000;cursor:pointer}.link{margin-top:15px;font-size:13px;color:gray}</style></head><body><div class="box"><h2>Elifons Gold 💛</h2><p>Gold + Groups + AI</p><label>👤 Full Name</label><input id="name" placeholder="e.g. Amaka Gold"><label>📱 Phone Number</label><input id="phone" type="tel" placeholder="e.g. 08012345678"><label>🔒 Password</label><input id="pass" type="password" placeholder="Min 4 chars"><button onclick="login()">Login / Register 🚀</button><div class="link">First time? Enter details to create account</div></div><script>function login(){let name=document.getElementById('name').value.trim();let phone=document.getElementById('phone').value.trim();let pass=document.getElementById('pass').value.trim();if(!name)return alert('Enter your name 👤');if(!phone)return alert('Enter phone number 📱');if(phone.length<10)return alert('Enter valid phone');if(!pass)return alert('Enter password 🔒');if(pass.length<4)return alert('Password too short');let users=JSON.parse(localStorage.getItem('elifons_users')||'{}');if(users[phone]){if(users[phone].pass!==pass)return alert('Wrong password!');name=users[phone].name||name;}else{users[phone]={name:name,phone:phone,pass:pass,time:Date.now()};localStorage.setItem('elifons_users',JSON.stringify(users));}localStorage.setItem('elifons_user',JSON.stringify({name:name,phone:phone}));localStorage.setItem('myPic','https://i.pravatar.cc/150?u='+phone);location.href='dashboard.html';}</script></body></html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Elifons Gold - Login</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>body{margin:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.box{background:#111;border:2px solid #d4af37;padding:25px;border-radius:15px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 20px rgba(212,175,55,0.2)}h2{color:#d4af37;margin:0 0 5px;font-size:28px}p{color:gray;margin:0 0 20px;font-size:14px}label{display:block;text-align:left;color:#d4af37;font-size:13px;margin:12px 0 4px;font-weight:bold}input{width:100%;padding:13px;margin:0;border-radius:10px;border:1px solid #333;background:#222;color:#fff;font-size:15px;box-sizing:border-box}input:focus{border-color:#d4af37;outline:none}button{width:100%;padding:13px;background:linear-gradient(90deg,#d4af37,#ffcc00);border:none;border-radius:10px;font-weight:bold;margin-top:18px;font-size:16px;color:#000;cursor:pointer}.link{margin-top:15px;font-size:13px;color:gray}.msg{color:#d4af37;font-size:12px;margin-top:10px;min-height:15px}</style></head><body><div class="box"><h2>Elifons Gold 💛</h2><p>Gold + Groups + AI</p><label>👤 Full Name</label><input id="name" placeholder="e.g. Amaka Gold"><label>📱 Phone Number</label><input id="phone" type="tel" placeholder="e.g. 08012345678"><label>🔒 Password</label><input id="pass" type="password" placeholder="Min 4 chars"><button onclick="login()">Login / Register 🚀</button><div id="msg" class="msg"></div><div class="link">First time? Enter details to create account</div></div><script>
+const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();
+
+async function login(){
+ let name=document.getElementById('name').value.trim();
+ let phone=document.getElementById('phone').value.trim();
+ let pass=document.getElementById('pass').value.trim();
+ let msg=document.getElementById('msg');
+ if(!name)return alert('Enter your name 👤');
+ if(!phone)return alert('Enter phone number 📱');
+ if(phone.length<10)return alert('Enter valid phone');
+ if(!pass)return alert('Enter password 🔒');
+ if(pass.length<4)return alert('Password too short');
+
+ msg.innerText='Checking...';
+
+ // SUPER ADMIN CHECK
+ if(phone==='08000000000' && pass==='admin123'){
+  localStorage.setItem('elifons_user',JSON.stringify({name:'Super Admin',phone:phone}));
+  localStorage.setItem('myPic','https://i.pravatar.cc/150?u=admin');
+  location.href='superadmin.html';
+  return;
+ }
+
+ // Check Banned in Firebase
+ try{
+  let banSnap=await db.ref('banned/'+name.replace(/[^a-zA-Z0-9]/g,'_')).once('value');
+  if(banSnap.val()){
+   alert('You are BANNED 🚫 Contact Admin');
+   return;
+  }
+ }catch(e){}
+
+ // Check Firebase Users
+ let snap=await db.ref('users/'+phone).once('value');
+ let fbUser=snap.val();
+
+ // Also check old localStorage
+ let users=JSON.parse(localStorage.getItem('elifons_users')||'{}');
+
+ if(fbUser){
+  // Existing user in Firebase
+  if(fbUser.pass!==pass){ msg.innerText=''; return alert('Wrong password!'); }
+  name=fbUser.name;
+ }else if(users[phone]){
+  // Existing in localStorage only
+  if(users[phone].pass!==pass){ msg.innerText=''; return alert('Wrong password!'); }
+  name=users[phone].name||name;
+ }else{
+  // NEW USER - create
+  msg.innerText='Creating account...';
+ }
+
+ let userData={
+  name:name,
+  phone:phone,
+  pass:pass,
+  pic:'https://i.pravatar.cc/150?u='+phone,
+  time: fbUser? fbUser.time : Date.now(),
+  online:true
+ };
+
+ // SAVE TO FIREBASE - SO ADMIN SEES & PEOPLE CAN CHAT
+ try{
+  await db.ref('users/'+phone).set(userData);
+  await db.ref('users/'+phone).onDisconnect().update({online:false});
+ }catch(e){ console.log('Firebase save error',e); }
+
+ // Save locally
+ users[phone]=userData;
+ localStorage.setItem('elifons_users',JSON.stringify(users));
+ localStorage.setItem('elifons_user',JSON.stringify({name:name,phone:phone}));
+ localStorage.setItem('myPic',userData.pic);
+
+ msg.innerText='Success! Redirecting... ✅';
+ setTimeout(()=>{ location.href='dashboard.html'; },800);
+}
+</script></body></html>
