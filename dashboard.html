@@ -7,9 +7,8 @@
 body{background:#000;color:#fff;padding-bottom:60px}
 .top{position:sticky;top:0;z-index:10;background:#111;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:2px solid #d4af37}
 .top b{color:#d4af37;font-size:22px}
-.icon{width:34px;height:34px;background:#222;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .fb-nav{position:sticky;top:52px;z-index:9;background:#111;display:flex;justify-content:space-around;padding:8px 0;border-bottom:1px solid #222}
-.fb-nav span{padding:6px 14px;border-radius:20px;cursor:pointer}
+.fb-nav span{padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px}
 .fb-nav span.active,.bottom-nav span.active{background:#d4af37;color:#000;font-weight:bold}
 .page{display:none;min-height:60vh}.page.active{display:block}
 .story-bar{display:flex;gap:10px;overflow-x:auto;padding:10px;background:#111;border-bottom:1px solid #222}
@@ -21,286 +20,171 @@ body{background:#000;color:#fff;padding-bottom:60px}
 .post-caption{padding:10px}
 .post-media{width:100%;max-height:500px;object-fit:cover;background:#000}
 .actions{display:flex;justify-content:space-around;padding:8px;border-top:1px solid #222}
-.actions span{cursor:pointer}
+.actions span{cursor:pointer;font-size:13px}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #d4af37;display:flex;justify-content:space-around;padding:8px 0;z-index:20}
-.bottom-nav span{padding:6px 12px;border-radius:20px;cursor:pointer}
-.group-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
-.group-box{background:#111;border:2px solid #d4af37;border-radius:15px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
-.group-pic-upload{width:80px;height:80px;border-radius:50%;background:#222;border:2px dashed #d4af37;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 auto 10px;overflow:hidden}
-.group-pic-upload img{width:100%;height:100%;object-fit:cover}
-.group-box input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff}
-.member{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #222}
+.bottom-nav span{padding:6px 12px;border-radius:20px;cursor:pointer;font-size:13px}
 .chat-window{position:fixed;inset:0;background:#000;z-index:50;display:none;flex-direction:column}
 .messages{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
 .msg{max-width:75%;padding:8px 12px;border-radius:15px;font-size:14px;word-break:break-word}
 .msg.me{align-self:flex-end;background:#d4af37;color:#000;border-bottom-right-radius:4px}
 .msg.them{align-self:flex-start;background:#222;border-bottom-left-radius:4px}
-.msg.ai{align-self:flex-start;background:#1a2a3a;border:1px solid #d4af37}
 .input-bar{display:flex;gap:6px;padding:8px;background:#111;border-top:1px solid #222;align-items:center}
 .input-bar input{flex:1;padding:10px;border-radius:20px;border:none;background:#222;color:#fff}
-.reply-bar{background:#222;padding:6px 10px;font-size:12px;display:none;border-left:3px solid #d4af37;margin:4px 10px;border-radius:6px}
-.reply-tag{font-size:11px;color:#d4af37;background:#000;padding:4px 6px;border-radius:6px;margin-bottom:4px;border-left:2px solid #d4af37}
-.info-page{position:fixed;inset:0;background:#000;z-index:60;display:none;overflow-y:auto}
-.story-viewer{position:fixed;inset:0;background:#000;z-index:70;display:none;flex-direction:column}
-.progress{height:3px;background:#333;display:flex;gap:2px;padding:2px}
-.progress div{flex:1;background:#d4af37;height:100%}
+.group-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.group-box{background:#111;border:2px solid #d4af37;border-radius:15px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.group-box input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff}
+.member{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #222}
 </style></head><body>
 <script>
-const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
+const firebaseConfig={apiKey:"AIzaSyBYgBfnbS7gWjU_4Xr0XyqJzQe3QeXyqZQw",authDomain:"elifons-dcfb2.firebaseapp.com",databaseURL:"https://elifons-dcfb2-default-rtdb.firebaseio.com",projectId:"elifons-dcfb2",storageBucket:"elifons-dcfb2.appspot.com",messagingSenderId:"123456789",appId:"1:123456789:web:abc123"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
 const db=firebase.database();
 let user=JSON.parse(localStorage.getItem('elifons_user')||'null');
 if(!user){location.href='index.html';}
 let myPic=localStorage.getItem('myPic')||'https://i.pravatar.cc/100?u='+user.name;
-let mediaBase64=null,storyBase64=null,groupPicBase64=null,newGroupPic=null;
-window.currentChat=null;window.isAIChat=false;window.replyTo=null;window.currentGroup=null;
-window.mr=null;window.chunks=[];
-</script>
-<script>
-// Compat helpers
+window.currentChat=null;
+window.currentGroup=null;
+
+// SAVE USER TO FIREBASE - so admin sees
+db.ref('users/'+user.phone).set({name:user.name, phone:user.phone, pic:myPic, time:Date.now(), online:true});
+db.ref('users/'+user.phone).onDisconnect().update({online:false});
+
+// Check if banned
+db.ref('banned/'+user.name.replace(/[^a-zA-Z0-9]/g,'_')).once('value').then(s=>{if(s.val()){alert('You are BANNED 🚫'); localStorage.clear(); location.href='index.html';}});
+
 const ref=(d,p)=>firebase.database().ref(p);
-const onValue=(r,cb,opt)=>{if(opt&&opt.onlyOnce) r.once('value').then(s=>cb(s)); else r.on('value',cb);};
 const push=(r,d)=>r.push(d);
 const get=(r)=>r.once('value');
 const update=(r,d)=>r.update(d);
 const remove=(r)=>r.remove();
-window.handleFile=()=>{let f=document.getElementById('fileInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{mediaBase64=e.target.result; alert('Media ready! Now type caption and hit Post');};rd.readAsDataURL(f);};
-window.handleStory=()=>{let f=document.getElementById('storyInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{let p=ref(db,'stories'); push(p,{name:user.name,pic:myPic,media:e.target.result,time:Date.now()}); alert('Story added!');};rd.readAsDataURL(f);};
-window.handleGroupPic=()=>{let f=document.getElementById('groupPicInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{groupPicBase64=e.target.result; document.getElementById('groupPicPreview').innerHTML=`<img src="${e.target.result}">`;};rd.readAsDataURL(f);};
-window.handleNewGroupPic=()=>{let f=document.getElementById('newGroupPicInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{window.newGroupPic=e.target.result; document.getElementById('infoPic').innerHTML=`<img src="${e.target.result}" style="width:100px;height:100px;border-radius:50%;border:3px solid #d4af37;object-fit:cover">`;};rd.readAsDataURL(f);};
+</script>
+
+<div class="top"><b>Elifons Gold</b><div style="display:flex;gap:8px"><span onclick="document.getElementById('storyInput').click()">➕ Story</span><span onclick="publishPost()">📤 Post</span></div></div>
+<div class="fb-nav"><span class="active" onclick="showPage('home',this)">🏠 Home</span><span onclick="showPage('users',this)">👥 People</span><span onclick="showPage('chats',this)">💬 Chats</span><span onclick="showPage('groups',this)">👑 Groups</span><span onclick="showPage('profile',this)">👤 Me</span></div>
+
+<input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="handleFile()">
+<input type="file" id="storyInput" hidden accept="image/*,video/*" onchange="handleStory()">
+
+<div id="home" class="page active">
+ <div id="storyBar" class="story-bar"></div>
+ <div style="padding:10px;max-width:600px;margin:0 auto"><input id="capInput" placeholder="What's on your mind, ${user.name}? 💛" style="width:100%;padding:12px;border-radius:20px;border:1px solid #333;background:#222;color:#fff"><button onclick="publishPost()" style="margin-top:8px;width:100%;padding:10px;background:#d4af37;border:none;border-radius:10px;font-weight:bold">Post</button></div>
+ <div id="feed"></div>
+</div>
+
+<div id="users" class="page">
+ <div style="padding:10px"><input id="searchUser" placeholder="🔍 Search people..." oninput="filterPeople()" style="width:100%;padding:10px;border-radius:20px;background:#222;border:1px solid #333;color:#fff">
+ <div id="peopleList"></div></div>
+</div>
+
+<div id="chats" class="page"><div id="chatList"></div></div>
+
+<div id="groups" class="page"><div style="padding:10px"><button onclick="openGroupModal()" style="width:100%;padding:12px;background:#d4af37;border:none;border-radius:10px;font-weight:bold">➕ New Group</button></div><div id="groupList"></div></div>
+
+<div id="profile" class="page" style="text-align:center;padding:20px"><img src="${myPic}" id="myProfilePic" style="width:80px;height:80px;border-radius:50%;border:3px solid #d4af37"><h3 id="myName"></h3><p id="myPhone" style="color:gray"></p><button onclick="localStorage.clear();location.href='index.html'" style="background:#ff4444;color:#fff;margin-top:20px">Logout</button></div>
+
+<div id="chatWindow" class="chat-window">
+ <div style="background:#111;padding:10px;display:flex;align-items:center;gap:10px;border-bottom:2px solid #d4af37"><span onclick="closeChat()" style="font-size:20px;cursor:pointer">←</span><div id="chatHeaderPic"></div><b id="chatHeaderName"></b></div>
+ <div id="messages" class="messages"></div>
+ <div class="input-bar"><input id="chatInput" placeholder="Type message..."><button onclick="sendMessage()" style="background:#d4af37;border:none;padding:10px 15px;border-radius:20px;font-weight:bold">Send</button></div>
+</div>
+
+<div id="groupModal" class="group-modal"><div class="group-box"><h3 style="color:#d4af37">New Group</h3><input id="groupName" placeholder="Group Name"><div id="selectedMembers" style="margin:10px 0;display:flex;flex-wrap:wrap;gap:5px"></div><div id="usersList"></div><button onclick="createGroup()" style="width:100%;margin-top:10px;background:#d4af37">Create Group</button><button onclick="closeGroupModal()" style="width:100%;background:#333;color:#fff">Cancel</button></div></div>
+
+<script>
+function showPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.fb-nav span').forEach(s=>s.classList.remove('active'));if(el)el.classList.add('active');}
+let mediaBase64=null;
+window.handleFile=()=>{let f=document.getElementById('fileInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{mediaBase64=e.target.result;};rd.readAsDataURL(f);};
+window.handleStory=()=>{let f=document.getElementById('storyInput').files[0];if(!f)return;let rd=new FileReader();rd.onload=e=>{push(ref(db,'stories'),{name:user.name,pic:myPic,media:e.target.result,time:Date.now()}); alert('Story added!');};rd.readAsDataURL(f);};
 window.publishPost=()=>{
  let cap=document.getElementById('capInput').value.trim();
- if(!cap &&!mediaBase64) return alert('Type something or add photo');
+ if(!cap &&!mediaBase64) return alert('Type something');
  let type=mediaBase64&&mediaBase64.includes('video')?'video':'image';
  push(ref(db,'posts'),{name:user.name,pic:myPic,caption:cap,media:mediaBase64||'',type:type,likes:0,likedBy:{},time:Date.now()});
- document.getElementById('capInput').value=''; mediaBase64=null;
- alert('Posted!');
+ document.getElementById('capInput').value=''; mediaBase64=null; alert('Posted!');
 };
-function loadFeed(){
- onValue(ref(db,'posts'),snap=>{
-  let data=snap.val(); let feed=document.getElementById('feed'); let vfeed=document.getElementById('videoFeed'); let my=document.getElementById('myPosts');
-  feed.innerHTML=''; if(vfeed) vfeed.innerHTML=''; if(my) my.innerHTML='';
-  if(!data){feed.innerHTML='<p style="text-align:center;color:gray;padding:20px">No posts yet. Be first!</p>';return;}
-  let posts=Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>b.time-a.time);
-  posts.forEach(p=>{
-   let liked=p.likedBy&&p.likedBy[user.name.replace(/[^a-zA-Z0-9]/g,'_')];
-   let media=p.media? (p.type==='video'? `<video src="${p.media}" controls class="post-media"></video>` : `<img src="${p.media}" class="post-media">`) : '';
-   if(p.type==='live') media=`<div style="background:red;color:#fff;padding:10px;text-align:center;font-weight:bold">LIVE: ${p.caption}</div>`;
-   let html=`<div class="feed-post"><div class="post-head"><img src="${p.pic}"><div><b style="color:#d4af37">${p.name}</b><br><small style="color:gray">${new Date(p.time).toLocaleString()}</small></div></div><div class="post-caption">${p.caption}</div>${media}<div class="actions"><span onclick="likePost('${p.key}',${p.likes||0})">${liked?'💛':'🤍'} ${p.likes||0} Like</span><span onclick="openChat('${p.name.replace(/'/g,'')}')">💬 Chat</span><span>↗️ Share</span></div></div>`;
-   feed.innerHTML+=html;
-   if(p.type==='video' && vfeed) vfeed.innerHTML+=html;
-   if(p.name===user.name && my) my.innerHTML+=html;
+
+function loadAll(){
+ ref(db,'users').on('value',snap=>{
+  let data=snap.val()||{}; let pl=document.getElementById('peopleList'); let cl=document.getElementById('chatList'); let ul=document.getElementById('usersList');
+  pl.innerHTML=''; cl.innerHTML=''; ul.innerHTML='';
+  Object.values(data).forEach(u=>{
+   if(u.phone===user.phone) return;
+   let online=u.online?'🟢':'⚫';
+   pl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${u.phone}','${u.name}','${u.pic}')"><img src="${u.pic}" style="width:40px;height:40px;border-radius:50%"><div><b>${u.name}</b> ${online}<br><small style="color:gray">${u.phone}</small></div><span style="margin-left:auto">💬</span></div>`;
+   cl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${u.phone}','${u.name}','${u.pic}')"><img src="${u.pic}" style="width:40px;height:40px;border-radius:50%"><div><b>${u.name}</b><br><small>Tap to chat</small></div></div>`;
+   ul.innerHTML+=`<div class="member"><span>👤 ${u.name}</span><button onclick="toggleMember('${u.name}','${u.phone}')" style="background:#222;border:1px solid #d4af37;padding:4px 10px;border-radius:10px;color:#d4af37">Add</button></div>`;
   });
  });
- onValue(ref(db,'stories'),snap=>{
-  let data=snap.val(); let bar=document.getElementById('storyBar'); let pbar=document.getElementById('profileStories');
-  if(bar) bar.innerHTML=`<div class="story" onclick="document.getElementById('storyInput').click()"><img src="${myPic}" style="border-color:gray"><br><small>You</small></div>`;
-  if(pbar) pbar.innerHTML='';
-  if(!data) return;
-  Object.values(data).slice(-15).forEach(s=>{
-   let h=`<div class="story" onclick="viewStory('${s.media}','${s.name}','${s.pic}')"><img src="${s.pic}"><br><small>${s.name.split(' ')[0]}</small></div>`;
-   if(bar) bar.innerHTML+=h;
-   if(pbar && s.name===user.name) pbar.innerHTML+=h;
+ ref(db,'posts').on('value',snap=>{
+  let data=snap.val(); let feed=document.getElementById('feed'); feed.innerHTML='';
+  if(!data){feed.innerHTML='<p style="text-align:center;color:gray;padding:20px">No posts yet</p>';return;}
+  Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>b.time-a.time).forEach(p=>{
+   let media=p.media? (p.type==='video'? `<video src="${p.media}" controls style="width:100%"></video>` : `<img src="${p.media}" style="width:100%">`) : '';
+   feed.innerHTML+=`<div class="feed-post"><div class="post-head"><img src="${p.pic}"><div><b style="color:#d4af37">${p.name}</b><br><small style="color:gray">${new Date(p.time).toLocaleString()}</small></div></div><div style="padding:10px">${p.caption}</div>${media}<div class="actions"><span onclick="likePost('${p.key}')">💛 Like ${p.likes||0}</span><span onclick="openChat('${p.name}','${p.name}','${p.pic}')">💬 Chat</span></div></div>`;
   });
  });
- onValue(ref(db,'groups'),snap=>{
-  let data=snap.val(); let gl=document.getElementById('groupList'); if(!gl) return;
-  gl.innerHTML=''; if(!data){gl.innerHTML='<p style="color:gray;text-align:center;padding:10px">No groups yet. Tap New Group!</p>';return;}
-  Object.values(data).forEach(g=>{
+ ref(db,'groups').on('value',snap=>{
+  let data=snap.val(); let gl=document.getElementById('groupList'); gl.innerHTML='';
+  if(!data)return; Object.values(data).forEach(g=>{
    if(!g.members||!g.members.includes(user.name)) return;
-   let pic=g.pic?`<img src="${g.pic}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #d4af37">`:`<div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(45deg,#d4af37,#ff9800);display:flex;align-items:center;justify-content:center">👥</div>`;
-   gl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${g.id}')">${pic}<div><b style="color:#d4af37">${g.name}</b><br><small style="color:gray">${g.members.length} members</small></div><span style="margin-left:auto">👥</span></div>`;
+   gl.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('${g.id}','${g.name}','',true)"><div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(45deg,#d4af37,#ff9800);display:flex;align-items:center;justify-content:center">👥</div><div><b style="color:#d4af37">${g.name}</b><br><small>${g.members.length} members</small></div></div>`;
   });
  });
- onValue(ref(db,'notifications'),snap=>{
-  let data=snap.val(); let nf=document.getElementById('notifFeed'); let badge=document.getElementById('notifBadge');
-  if(!nf) return; nf.innerHTML=''; let count=0;
-  if(data){
-   Object.values(data).reverse().forEach(n=>{
-    if(n.to===user.name||n.to==='all'){
-     count++;
-     nf.innerHTML+=`<div style="padding:12px;border-bottom:1px solid #222;display:flex;gap:10px"><div style="width:36px;height:36px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center">🔔</div><div><b style="color:#d4af37">${n.from}</b> ${n.text}<br><small style="color:gray">${new Date(n.time).toLocaleString()}</small></div></div>`;
-    }
-   });
-  }
-  if(badge) badge.innerText=count?`(${count})`:'';
-  if(!nf.innerHTML) nf.innerHTML='<p style="text-align:center;color:gray;padding:20px">No notifications</p>';
+ ref(db,'stories').on('value',snap=>{
+  let data=snap.val(); let bar=document.getElementById('storyBar'); bar.innerHTML=`<div class="story" onclick="document.getElementById('storyInput').click()"><img src="${myPic}" style="border-color:gray"><br><small>You</small></div>`;
+  if(!data) return; Object.values(data).slice(-15).forEach(s=>{
+   bar.innerHTML+=`<div class="story"><img src="${s.pic}"><br><small>${s.name.split(' ')[0]}</small></div>`;
+  });
  });
 }
-setTimeout(loadFeed,1000);
-window.likePost=async(k,c)=>{
- let r=ref(db,'posts/'+k+'/likedBy/'+user.name.replace(/[^a-zA-Z0-9]/g,'_'));
+setTimeout(loadAll,500);
+document.getElementById('myName').innerText=user.name; document.getElementById('myPhone').innerText=user.phone;
+
+window.likePost=async(k)=>{
  let s=await get(ref(db,'posts/'+k)); let p=s.val(); if(!p) return;
- let liked=p.likedBy&&p.likedBy[user.name.replace(/[^a-zA-Z0-9]/g,'_')];
- if(liked){ await remove(r); await update(ref(db,'posts/'+k),{likes:(p.likes||1)-1}); }
- else { await update(ref(db,'posts/'+k+'/likedBy'),{[user.name.replace(/[^a-zA-Z0-9]/g,'_')]:true}); await update(ref(db,'posts/'+k),{likes:(p.likes||0)+1}); push(ref(db,'notifications'),{to:p.name,from:user.name,text:`liked your post`,time:Date.now()}); }
+ await update(ref(db,'posts/'+k),{likes:(p.likes||0)+1});
 };
-window.viewStory=(media,name,pic)=>{
- document.getElementById('storyViewer').style.display='flex';
- document.getElementById('sName').innerText=name;
- document.getElementById('sPic').src=pic;
- document.getElementById('sContent').innerHTML=media.includes('video')?`<video src="${media}" autoplay controls style="width:100%;max-height:80vh"></video>`:`<img src="${media}" style="width:100%;max-height:80vh;object-fit:contain">`;
- setTimeout(()=>{document.getElementById('storyViewer').style.display='none';},7000);
+window.selected=[];
+window.toggleMember=(name,phone)=>{
+ if(window.selected.includes(name)) window.selected=window.selected.filter(n=>n!==name); else window.selected.push(name);
+ document.getElementById('selectedMembers').innerHTML=window.selected.map(n=>`<span style="background:#d4af37;color:#000;padding:4px 8px;border-radius:10px;font-size:12px;margin:2px">${n}</span>`).join('');
 };
-window.closeStory=()=>{document.getElementById('storyViewer').style.display='none';};
-window.nextStory=()=>{document.getElementById('storyViewer').style.display='none';};
-window.openGroupModal=()=>{
- document.getElementById('groupModal').style.display='flex';
- window.selected=[];
- document.getElementById('selectedMembers').innerHTML='';
- document.getElementById('groupPicPreview').innerHTML='📷<br><small>Add Photo</small>';
- groupPicBase64=null; document.getElementById('groupName').value='';
- onValue(ref(db,'posts'),snap=>{
-  let data=snap.val(); let users=new Set(); if(data) Object.values(data).forEach(p=>users.add(p.name));
-  users.add('Amaka'); users.delete(user.name);
-  let html=''; users.forEach(u=>{ html+=`<div class="member"><span>👤 ${u}</span><button onclick="toggleMember('${u.replace(/'/g,'')}')" id="btn-${u.replace(/[^a-zA-Z0-9]/g,'_')}" style="background:#222;border:1px solid #d4af37;padding:4px 10px;border-radius:10px;color:#d4af37">Add</button></div>`; });
-  document.getElementById('usersList').innerHTML=html||'<p style="color:gray">No users yet</p>';
- },{onlyOnce:true});
-};
+window.openGroupModal=()=>{document.getElementById('groupModal').style.display='flex'; window.selected=[]; document.getElementById('selectedMembers').innerHTML=''; document.getElementById('groupName').value='';};
 window.closeGroupModal=()=>{document.getElementById('groupModal').style.display='none';};
-window.toggleMember=(name)=>{
- if(!window.selected) window.selected=[];
- if(window.selected.includes(name)){ window.selected=window.selected.filter(n=>n!==name); }
- else { window.selected.push(name); }
- document.getElementById('selectedMembers').innerHTML=window.selected.map(n=>`<span style="background:#d4af37;color:#000;padding:4px 8px;border-radius:10px;font-size:12px;margin:2px">${n} <span onclick="toggleMember('${n}')">x</span></span>`).join('');
-};
 window.createGroup=async()=>{
- let gname=document.getElementById('groupName').value.trim(); if(!gname) return alert('Enter group name');
- let members=[...new Set([user.name,...(window.selected||[])])];
+ let gname=document.getElementById('groupName').value.trim(); if(!gname) return alert('Enter name');
+ let members=[...new Set([user.name,...window.selected])];
  let id='GROUP_'+gname.replace(/\s/g,'_')+'_'+Date.now();
- let group={id:id,name:gname,members:members,pic:groupPicBase64||'',admin:user.name,time:Date.now()};
- let snap=await push(ref(db,'groups'),group);
- let k=snap.key;
- await update(ref(db,'groups/'+k),{key:k});
- push(ref(db,'chats/'+id),{text:`${user.name} created group "${gname}"`,sender:'System',type:'text',time:Date.now()});
- members.forEach(m=>{ if(m!==user.name) push(ref(db,'notifications'),{to:m,from:user.name,text:`added you to group ${gname}`,time:Date.now()}); });
- closeGroupModal(); alert('Group created!'); openChat(id);
+ let group={id:id,name:gname,members:members,admin:user.name,time:Date.now()};
+ let snap=await push(ref(db,'groups'),group); await update(ref(db,'groups/'+snap.key),{key:snap.key});
+ closeGroupModal(); alert('Group created!'); openChat(id,gname,'',true);
 };
-  window.openGroupInfo=()=>{
- let g=window.currentGroup; if(!g) return;
- document.getElementById('infoPage').style.display='block';
- document.getElementById('infoName').innerText=g.name;
- document.getElementById('infoCount').innerText=g.members.length+' members';
- document.getElementById('infoPic').innerHTML=g.pic?`<img src="${g.pic}" style="width:100px;height:100px;border-radius:50%;border:3px solid #d4af37;object-fit:cover">`:`<div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(45deg,#d4af37,#ff9800);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto">👥</div>`;
- document.getElementById('infoPic').onclick=()=>{document.getElementById('newGroupPicInput').click();};
- let mhtml=''; g.members.forEach(m=>{ mhtml+=`<div class="member"><span>👤 ${m} ${m===g.admin?'👑':''}</span>${m!==user.name?`<button onclick="removeMember('${m}')" style="background:#331111;border:none;padding:4px 8px;border-radius:8px;color:#ff6666">Remove</button>`:''}</div>`; });
- document.getElementById('infoMembers').innerHTML=mhtml;
- document.getElementById('infoAdminActions').innerHTML=`<button onclick="openAddMemberModal()" style="width:100%;background:#d4af37;border:none;padding:10px;border-radius:10px;font-weight:bold;margin-bottom:10px">➕ Add Members</button>`;
-};
-window.closeGroupInfo=()=>{document.getElementById('infoPage').style.display='none';};
-window.removeMember=async(name)=>{
- if(!confirm('Remove '+name+'?')) return;
- let g=window.currentGroup; let newM=g.members.filter(m=>m!==name);
- await update(ref(db,'groups/'+g.key),{members:newM});
- push(ref(db,'chats/'+g.id),{text:`${user.name} removed ${name}`,sender:'System',type:'text',time:Date.now()});
- openGroupInfo();
-};
-window.exitGroup=async()=>{
- if(!confirm('Exit group?')) return;
- let g=window.currentGroup; let newM=g.members.filter(m=>m!==user.name);
- await update(ref(db,'groups/'+g.key),{members:newM});
- closeGroupInfo(); closeChat();
-};
-window.deleteGroup=async()=>{
- if(!confirm('Delete group permanently?')) return;
- let g=window.currentGroup; await remove(ref(db,'groups/'+g.key)); await remove(ref(db,'chats/'+g.id));
- closeGroupInfo(); closeChat();
-};
-window.openAddMemberModal=()=>{document.getElementById('addMemberModal').style.display='flex'; loadAddMembers();};
-window.closeAddMemberModal=()=>{document.getElementById('addMemberModal').style.display='none';};
-window.loadAddMembers=()=>{ onValue(ref(db,'posts'),(snap)=>{ let data=snap.val(); let users=new Set(); if(data){ Object.values(data).forEach(p=>{ users.add(p.name); }); } users.add('Amaka'); let g=window.currentGroup; let html=''; users.forEach(u=>{ if(!g.members.includes(u)){ html+=`<div class="member"><span>👤 ${u}</span><button onclick="addToGroup('${u.replace(/'/g,'')}')" style="background:#d4af37;border:none;padding:6px 12px;border-radius:10px">Add</button></div>`; } }); document.getElementById('addUsersList').innerHTML=html||'<p style="color:gray;text-align:center">No new users</p>'; }, {onlyOnce:true}); };
-window.addToGroup=async(name)=>{ let g=window.currentGroup; let newMembers=[...new Set([...g.members,name])]; await update(ref(db,'groups/'+g.key),{members:newMembers}); push(ref(db,'chats/'+g.id),{text:`${user.name} added ${name}`,sender:'System',type:'text',time:Date.now()}); push(ref(db,'notifications'),{to:name,from:user.name,text:`added you to ${g.name}`,time:Date.now()}); closeAddMemberModal(); openGroupInfo(); };
-window.changeGroupPhoto=async()=>{ if(!window.newGroupPic) return; let g=window.currentGroup; await update(ref(db,'groups/'+g.key),{pic:window.newGroupPic}); push(ref(db,'chats/'+g.id),{text:`${user.name} changed group photo`,sender:'System',type:'text',time:Date.now()}); window.newGroupPic=null; openGroupInfo(); };
-window.askElifonsAI=(q)=>{
- let ans="Hi "+user.name+"! 💛 I'm Elifons AI 🤖\n\n";
- let l=q.toLowerCase();
- if(l.includes('caption')) ans+="Here are viral captions:\n1. Golden vibes only ✨ #ElifonsGold\n2. Less perfection, more authenticity 💛\n3. Your story matters — share it 🚀";
- else if(l.includes('group')) ans+="Group ideas 👥:\n- Family Gold 💛\n- Business Hustlers 🚀\n- Study Squad 📚\nTap ➕ New Group to create!";
- else if(l.includes('idea')||l.includes('post')) ans+="Post ideas 💡:\n- Morning motivation ☀️\n- Behind the scenes 🎬\n- Ask your audience a question ❓\n- Share a win 🏆";
- else ans+="I'm here to help with:\n✍️ Captions\n💡 Post ideas\n👥 Group names\n🔥 Viral hooks\n\nAsk me anything! 🚀";
- setTimeout(()=>{ push(ref(db,'chats/Elifons_AI'),{text:ans,sender:'Elifons AI 🤖',type:'text',time:Date.now()}); },800);
-};
-window.openChat=(name)=>{
-  window.currentChat=name; window.isAIChat=(name==='Elifons_AI');
-  let isGroup=name.startsWith('GROUP_');
-  document.getElementById('chatWindow').style.display='flex';
-  get(ref(db,'groups')).then(s=>{
-   let data=s.val(); if(!data) return;
-   Object.values(data).forEach(g=>{ if(g.id===name){ window.currentGroup=g;
-    let pic=g.pic?`<img src="${g.pic}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #d4af37">`:`<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(45deg,#d4af37,#ff9800);display:flex;align-items:center;justify-content:center">👥</div>`;
-    document.getElementById('chatHeaderPic').innerHTML=pic;
-   }});
+
+function getChatId(otherPhone){
+ let phones=[user.phone, otherPhone].sort(); return 'CHAT_'+phones[0]+'_'+phones[1];
+}
+window.openChat=(id,name,pic,isGroup)=>{
+ window.currentChat=id; window.isGroupChat=isGroup;
+ document.getElementById('chatWindow').style.display='flex';
+ document.getElementById('chatHeaderName').innerText=name;
+ document.getElementById('chatHeaderPic').innerHTML=pic?`<img src="${pic}" style="width:36px;height:36px;border-radius:50%">`:'';
+ let chatRefId=isGroup? id : getChatId(id);
+ ref(db,'chats/'+chatRefId).on('value',snap=>{
+  let data=snap.val()||{}; let msgs=document.getElementById('messages'); msgs.innerHTML='';
+  Object.values(data).sort((a,b)=>a.time-b.time).forEach(m=>{
+   let isMe=m.sender===user.name || m.senderPhone===user.phone;
+   msgs.innerHTML+=`<div class="msg ${isMe?'me':'them'}"><b style="font-size:11px">${isMe?'You':m.sender}</b><br>${m.text}</div>`;
   });
-  if(!isGroup) document.getElementById('chatHeaderPic').innerHTML='';
-  document.getElementById('chatName').innerHTML=isGroup?name.replace('GROUP_','').split('_')[0]+' 👥 <small style="font-size:11px;color:#aaa">tap for info</small>':(name==='Elifons_AI'?'Elifons AI 🤖💛':name);
-  document.getElementById('chatName').onclick=()=>{ if(isGroup) openGroupInfo(); };
-  let r=ref(db,'chats/'+name.replace(/[^a-zA-Z0-9]/g,'_'));
-  onValue(r,s=>{
-    let b=document.getElementById('messages');b.innerHTML='';let v=s.val();
-    if(v){Object.values(v).forEach(m=>{ let rt=m.reply?`<div class="reply-tag">↩️ ${m.reply}</div>`:''; let isAI=m.sender&&m.sender.includes('AI'); let showName=isGroup&&m.sender!==user.name&&!isAI&&m.sender!=='System'?`<div style="font-size:11px;color:#d4af37;font-weight:bold">${m.sender}</div>`:''; let ct=m.type=='voice'?`<audio src="${m.text}" controls style="width:160px"></audio>`:m.text; let cls=isAI?'ai':(m.sender==user.name?'me':'them'); b.innerHTML+=`<div class="msg ${cls}" onclick="setReply('${(m.text||'').toString().substring(0,20).replace(/'/g,'')}')">${showName}${isAI?'🤖 ':''}${rt}${ct}<br><small style="font-size:9px;float:right;margin-top:4px">${new Date(m.time).toLocaleTimeString()} ✓✓</small><div style="clear:both"></div></div>`});}
-    else if(name==='Elifons_AI'){ b.innerHTML=`<div class="msg ai">🤖 Hi ${user.name}! I'm Elifons AI 💛<br><br>✍️ Viral captions<br>💡 Story ideas<br>👥 Group ideas<br>🔥 Ask anything!<br><br>Type below! 🚀</div>`; }
-    b.scrollTop=b.scrollHeight;
-  });
+  msgs.scrollTop=msgs.scrollHeight;
+ });
 };
-window.setReply=t=>{window.replyTo=t;document.getElementById('replyBar').style.display='block';document.getElementById('replyText').innerText='↩️ '+t};
-window.cancelReply=()=>{window.replyTo=null;document.getElementById('replyBar').style.display='none'};
-window.sendMsg=()=>{
-  let i=document.getElementById('msgInput'),t=i.value.trim();if(!t||!window.currentChat)return;
-  push(ref(db,'chats/'+window.currentChat.replace(/[^a-zA-Z0-9]/g,'_')),{text:t,sender:user.name,type:'text',reply:window.replyTo||null,time:Date.now()});
-  i.value='';cancelReply();
-  if(window.isAIChat){askElifonsAI(t);}
-  else if(window.currentChat.startsWith('GROUP_')){
-    get(ref(db,'groups')).then(s=>{ let data=s.val(); if(!data)return; Object.values(data).forEach(g=>{ if(g.id===window.currentChat){ g.members.forEach(m=>{ if(m!==user.name) push(ref(db,'notifications'),{to:m,from:user.name,text:`in ${g.name}: ${t.substring(0,20)}`,time:Date.now()}); }); } }); });
-  } else {push(ref(db,'notifications'),{to:window.currentChat,from:user.name,text:`messaged you: ${t.substring(0,20)}`,time:Date.now()})}
+window.closeChat=()=>{document.getElementById('chatWindow').style.display='none';};
+window.sendMessage=()=>{
+ let txt=document.getElementById('chatInput').value.trim(); if(!txt) return;
+ let chatRefId=window.isGroupChat? window.currentChat : getChatId(window.currentChat);
+ push(ref(db,'chats/'+chatRefId),{text:txt,sender:user.name,senderPhone:user.phone,time:Date.now()});
+ document.getElementById('chatInput').value='';
 };
-window.closeChat=()=>{document.getElementById('chatWindow').style.display='none'};
-window.startRec=async()=>{try{let s=await navigator.mediaDevices.getUserMedia({audio:true});mr=new MediaRecorder(s);chunks=[];mr.ondataavailable=e=>chunks.push(e.data);mr.onstop=()=>{let bl=new Blob(chunks,{type:'audio/webm'});let rd=new FileReader();rd.onload=()=>{push(ref(db,'chats/'+window.currentChat.replace(/[^a-zA-Z0-9]/g,'_')),{text:rd.result,sender:user.name,type:'voice',reply:window.replyTo||null,time:Date.now()}); if(window.isAIChat) push(ref(db,'chats/Elifons_AI'),{text:`🎤 Got voice! How can I help? 💛`,sender:'Elifons AI 🤖',type:'text',time:Date.now()});};rd.readAsDataURL(bl)};mr.start();document.getElementById('micBtn').style.background='red';}catch(e){alert('Allow mic')}};
-window.stopRec=()=>{if(mr&&mr.state=='recording'){mr.stop();document.getElementById('micBtn').style.background='#d4af37'}};
-window.switchPage=(p)=>{ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); document.querySelectorAll('.fb-nav span').forEach(el=>el.classList.remove('active')); let nav=document.getElementById('nav-'+p); if(nav) nav.classList.add('active'); document.querySelectorAll('.bottom-nav span').forEach(el=>el.classList.remove('active')); let bnav=document.getElementById('bnav-'+p); if(bnav) bnav.classList.add('active'); };
-window.goLive=()=>{let c=prompt('Go Live title?'); if(!c)return; push(ref(db,'posts'),{name:user.name,pic:myPic,caption:'🔴 LIVE: '+c,media:'',type:'live',likes:0,likedBy:{},time:Date.now()}); push(ref(db,'notifications'),{to:'all',from:user.name,text:`is LIVE 🔴 ${c}`,time:Date.now()}); alert('🔴 LIVE!'); switchPage('home');};
-</script></head>
-<body>
-<div class="top"><b>Elifons</b><div style="display:flex;gap:8px"><div class="icon" onclick="document.getElementById('storyInput').click()">➕</div><div class="icon" onclick="switchPage('chats')">💬</div><div class="icon" onclick="switchPage('notifications')">🔔<small id="notifBadge" style="color:#d4af37;font-weight:bold"></small></div></div></div>
-<div class="fb-nav"><span id="nav-home" class="active" onclick="switchPage('home')">🏠</span><span id="nav-videos" onclick="switchPage('videos')">🎬</span><span id="nav-live" onclick="switchPage('live')">🔴</span><span id="nav-chats" onclick="switchPage('chats')">💬</span><span id="nav-notifications" onclick="switchPage('notifications')">🔔</span><span id="nav-profile" onclick="switchPage('profile')">👤</span></div>
-<div id="page-home" class="page active"><div id="storyBar" class="story-bar"></div><input type="file" id="storyInput" hidden accept="image/*,video/*" onchange="handleStory()"><div style="max-width:600px;margin:8px auto;padding:10px;background:#111;border-radius:10px;display:flex;gap:8px;align-items:center"><img id="topPic" src="https://i.pravatar.cc/100" style="width:38px;height:38px;border-radius:50%"><input id="capInput" placeholder="What's on your mind?" style="flex:1;background:#222;border:none;padding:11px;border-radius:20px;color:#fff"><input type="file" id="fileInput" hidden accept="image/*,video/*" onchange="handleFile()"><button onclick="document.getElementById('fileInput').click()" style="background:#333;border:none;padding:8px 12px;border-radius:8px;color:#d4af37">📷</button><button onclick="publishPost()" style="background:#d4af37;border:none;padding:8px 14px;border-radius:8px;font-weight:bold">Post</button></div><div id="feed"></div></div>
-<div id="page-videos" class="page"><h3 style="padding:12px;color:#d4af37">🎬 Videos & Reels</h3><div id="videoFeed"></div></div>
-<div id="page-live" class="page"><div style="padding:30px;text-align:center"><h2 style="color:#d4af37">🔴 Live Center</h2><button onclick="goLive()" style="background:red;color:#fff;border:none;padding:14px 28px;border-radius:30px;font-size:18px;font-weight:bold">🔴 Go Live Now</button></div></div>
-<div id="page-chats" class="page">
-<h3 style="padding:12px;color:#d4af37;display:flex;justify-content:space-between;align-items:center"><span>💬 Chats + AI + Groups 👥</span><button onclick="openGroupModal()" style="background:#d4af37;border:none;padding:8px 14px;border-radius:20px;font-weight:bold">➕ New Group</button></h3>
-<div style="padding:10px">
-<div style="padding:16px;border:2px solid #d4af37;display:flex;gap:12px;align-items:center;cursor:pointer;background:linear-gradient(90deg,#1a2a3a,#111);border-radius:12px;margin-bottom:12px" onclick="openChat('Elifons_AI')"><img src="https://i.pravatar.cc/100?img=12" style="width:52px;height:52px;border-radius:50%;border:2px solid #d4af37"><div><b style="color:#d4af37">Elifons AI 🤖💛</b> <span style="background:#d4af37;color:#000;font-size:9px;padding:2px 6px;border-radius:10px">AI</span><br><small style="color:#0f0">● Always online • Ask anything</small></div><span style="margin-left:auto">🤖</span></div>
-<h4 style="color:#d4af37;margin:8px 0 6px">👥 My Groups (with Photo)</h4>
-<div id="groupList"><p style="color:gray;text-align:center;padding:10px">No groups yet. Tap ➕ New Group!</p></div>
-<h4 style="color:#d4af37;margin:18px 0 6px">💬 Direct Chats</h4>
-<div style="padding:16px;border-bottom:1px solid #222;display:flex;gap:12px;align-items:center;cursor:pointer" onclick="openChat('General')"><img src="https://i.pravatar.cc/100" style="width:50px;height:50px;border-radius:50%;border:2px solid #d4af37"><div><b>General Group LIVE 💛</b><br><small style="color:gray">All users</small></div><span style="color:#0f0;margin-left:auto">● live</span></div>
-</div>
-</div>
-<div id="page-notifications" class="page"><h3 style="padding:12px;color:#d4af37">🔔 Notifications</h3><div id="notifFeed"></div></div>
-<div id="page-profile" class="page"><div style="padding:20px;text-align:center;background:linear-gradient(180deg,#111,#000);border-bottom:1px solid #222"><img id="profPic" src="https://i.pravatar.cc/150" style="width:90px;height:90px;border-radius:50%;border:3px solid #d4af37"><h2 id="profName" style="color:#d4af37;margin:8px 0 2px"></h2><small style="color:gray">Gold + Groups 👥 + AI 🤖</small></div><h4 style="padding:12px;color:#d4af37">👥 Stories</h4><div id="profileStories" class="story-bar"></div><h4 style="padding:12px;color:#d4af37">📸 Posts</h4><div id="myPosts"></div></div>
-<div id="groupModal" class="group-modal"><div class="group-box">
-<h3 style="color:#d4af37;margin:0 0 10px">👥 Create New Group</h3>
-<div class="group-pic-upload" id="groupPicPreview" onclick="document.getElementById('groupPicInput').click()">📷<br><small>Add Photo</small></div>
-<input type="file" id="groupPicInput" hidden accept="image/*" onchange="handleGroupPic()">
-<input id="groupName" placeholder="Group name e.g. Family">
-<div style="margin:10px 0"><small style="color:#d4af37">Selected:</small><div id="selectedMembers" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"></div></div>
-<div style="max-height:200px;overflow-y:auto;background:#0a0a0a;border-radius:10px;padding:6px"><small style="color:gray">Add members</small><div id="usersList"></div></div>
-<div style="display:flex;gap:10px;margin-top:14px"><button onclick="closeGroupModal()" style="flex:1;background:#333;border:none;padding:12px;border-radius:10px;color:#fff">Cancel</button><button onclick="createGroup()" style="flex:1;background:#d4af37;border:none;padding:12px;border-radius:10px;font-weight:bold">Create</button></div>
-</div></div>
-<div id="addMemberModal" class="group-modal"><div class="group-box"><h3 style="color:#d4af37">➕ Add Members</h3><div id="addUsersList" style="max-height:300px;overflow-y:auto"></div><button onclick="closeAddMemberModal()" style="width:100%;background:#333;border:none;padding:10px;border-radius:10px;color:#fff;margin-top:10px">Close</button></div></div>
-<div id="infoPage" class="info-page">
-<div style="background:#111;padding:12px;display:flex;gap:10px;align-items:center;border-bottom:2px solid #d4af37;position:sticky;top:0"><span onclick="closeGroupInfo()" style="color:#d4af37;font-size:24px;cursor:pointer">←</span><b style="color:#d4af37">Group Info ℹ️</b></div>
-<div style="padding:20px;text-align:center;background:linear-gradient(180deg,#111,#000)">
-<div id="infoPic" style="margin:0 auto"></div>
-<h2 id="infoName" style="color:#d4af37;margin:12px 0 4px"></h2><small id="infoCount" style="color:gray"></small>
-<input type="file" id="newGroupPicInput" hidden accept="image/*" onchange="handleNewGroupPic(); setTimeout(changeGroupPhoto,500)">
-</div>
-<div style="padding:12px"><div id="infoAdminActions"></div><h4 style="color:#d4af37">Members</h4><div id="infoMembers"></div><div style="margin-top:20px"><button onclick="exitGroup()" style="width:100%;background:#331111;border:1px solid #ff4444;padding:12px;border-radius:10px;color:#ff6666;margin-bottom:8px">🚪 Exit Group</button><button onclick="deleteGroup()" style="width:100%;background:#220000;border:1px solid #ff0000;padding:12px;border-radius:10px;color:#ff0000">🗑️ Delete Group</button></div></div>
-</div>
-<div id="storyViewer" class="story-viewer"><div id="sProgress" class="progress"></div><div style="padding:12px;display:flex;gap:10px;align-items:center"><img id="sPic" src="" style="width:36px;height:36px;border-radius:50%"><b id="sName" style="color:#d4af37"></b><span onclick="closeStory()" style="margin-left:auto;font-size:24px;cursor:pointer">✕</span></div><div id="sContent" style="flex:1;display:flex;align-items:center;justify-content:center" onclick="nextStory()"></div></div>
-<div id="chatWindow" class="chat-window"><div style="background:#111;padding:12px;display:flex;gap:10px;align-items:center;border-bottom:2px solid #d4af37"><span onclick="closeChat()" style="color:#d4af37;font-size:24px;cursor:pointer">←</span><span id="chatHeaderPic"></span><b id="chatName" style="color:#d4af37"></b></div><div id="replyBar" class="reply-bar"><small id="replyText"></small><span onclick="cancelReply()" style="float:right;cursor:pointer">✕</span></div><div class="messages" id="messages"></div><div class="input-bar"><input id="msgInput" placeholder="Message Gold or ask AI 🤖" onkeydown="if(event.key==='Enter')sendMsg()"><button id="micBtn" onmousedown="startRec()" onmouseup="stopRec()" ontouchstart="startRec()" ontouchend="stopRec()" style="background:#d4af37;width:48px;height:48px;border-radius:50%;border:none">🎤</button><button onclick="sendMsg()" style="background:#d4af37;border:none;padding:10px 14px;border-radius:20px">➤</button></div><small style="text-align:center;color:#666;padding:4px;display:block">Tap group name/photo for Group Info ℹ️ • AI always online 🤖</small></div>
-<div class="bottom-nav"><span id="bnav-home" class="active" onclick="switchPage('home')">🏠</span><span id="bnav-videos" onclick="switchPage('videos')">🎬</span><span id="bnav-live" onclick="switchPage('live')">🔴</span><span id="bnav-chats" onclick="switchPage('chats')">💬</span><span id="bnav-notifications" onclick="switchPage('notifications')">🔔</span><span id="bnav-profile" onclick="switchPage('profile')">👤</span></div>
-<script>
-let p=localStorage.getItem('myPic'); if(p){document.getElementById('topPic').src=p;document.getElementById('profPic').src=p}
-let u=JSON.parse(localStorage.getItem('elifons_user')||'null'); if(u) document.getElementById('profName').innerText=u.name;
+function filterPeople(){let q=document.getElementById('searchUser').value.toLowerCase();document.querySelectorAll('#peopleList div').forEach(d=>{d.style.display=d.innerText.toLowerCase().includes(q)?'flex':'none';});}
 </script>
 </body></html>
